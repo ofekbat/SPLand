@@ -1,0 +1,12 @@
+ 
+*.o 
+*.out 
+*.log 
+build/ 
+.vscode/ 
+*.swp 
+*.tmp 
+*.bak 
+.DS_Store 
+.idea/ 
+.env 
