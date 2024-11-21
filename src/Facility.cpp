@@ -1,12 +1,12 @@
 #include "Facility.h"
 
-// FacilityType Implementation
+//FacilityType Implementation
 
-// Constructor
+//Constructor
 FacilityType::FacilityType(const string &name, const FacilityCategory category, const int price, const int lifeQuality_score, const int economy_score, const int environment_score)
     : name(name), category(category), price(price), lifeQuality_score(lifeQuality_score), economy_score(economy_score), environment_score(environment_score) {}
 
-// Getters
+//Getters
 const string& FacilityType::getName() const {
     return name;
 }
@@ -31,9 +31,9 @@ FacilityCategory FacilityType::getCategory() const {
     return category;
 }
 
-// Facility Implementation
+//Facility Implementation
 
-// Constructor (fully initialized)
+//Constructor (fully initialized)
 Facility::Facility(const string &name, const string &settlementName, const FacilityCategory category, const int price, const int lifeQuality_score, const int economy_score, const int environment_score)
     : FacilityType(name, category, price, lifeQuality_score, economy_score, environment_score),
       settlementName(settlementName),
@@ -41,7 +41,7 @@ Facility::Facility(const string &name, const string &settlementName, const Facil
     //TO DO:
       timeLeft(price) {}
 
-// Constructor (based on FacilityType)
+//Constructor (based on FacilityType)
 Facility::Facility(FacilityType &type, const string &settlementName)
     : FacilityType(type),
       settlementName(settlementName),
@@ -49,17 +49,15 @@ Facility::Facility(FacilityType &type, const string &settlementName)
     //TO DO:
       timeLeft(type.getCost()) {}
 
-// Get the name of the settlement
 const string& Facility::getSettlementName() const {
     return settlementName;
 }
 
-// Get the timeLeft
 const int Facility::getTimeLeft() const {
     return timeLeft;
 }
 
-// Advance construction, update status if finished
+//Advance construction, update status if finished
 FacilityStatus Facility::step() {
     if (timeLeft > 0) {
         timeLeft--;
@@ -70,17 +68,14 @@ FacilityStatus Facility::step() {
     return status;
 }
 
-// Set the status
 void Facility::setStatus(FacilityStatus newStatus) {
     status = newStatus;
 }
 
-// Get the current status
 const FacilityStatus& Facility::getStatus() const {
     return status;
 }
 
-// Convert the facility to a string
 const string Facility::toString() const {
     return "Facility: " + getName() +
            ", Settlement: " + settlementName +

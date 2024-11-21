@@ -8,7 +8,8 @@ Plan::Plan(const int planId, const Settlement &settlement, SelectionPolicy *sele
     : plan_id(planId), settlement(settlement), selectionPolicy(selectionPolicy), facilityOptions(facilityOptions),
       life_quality_score(0), economy_score(0), environment_score(0), status(PlanStatus::AVALIABLE) {}
 
-// Destructor
+//Destructor
+//check if needed
 Plan::~Plan() {
     for (auto facility : underConstruction) {
         delete facility;
@@ -36,7 +37,7 @@ const vector<Facility*>& Plan::getFacilities() const{
     return facilities;
 }
 
-// Update the selection policy
+//Update the selection policy
 void Plan::setSelectionPolicy(SelectionPolicy *newPolicy) {
     delete selectionPolicy;
     selectionPolicy = newPolicy->clone();
@@ -44,7 +45,7 @@ void Plan::setSelectionPolicy(SelectionPolicy *newPolicy) {
 
 
 //TO DO:
-// Perform a simulation step
+//Perform a simulation step
 void Plan::step() {
     for (auto& facility : underConstruction) {
         if (facility->step() == FacilityStatus::OPERATIONAL) {
@@ -56,7 +57,7 @@ void Plan::step() {
         underConstruction.end());
 }
 
-// Print the current status of the plan
+//Print the current status of the plan
 void Plan::printStatus() {
     cout << toString() << endl;
     cout << "Facilities under construction: " << underConstruction.size() << endl;
@@ -66,14 +67,14 @@ void Plan::printStatus() {
     cout << "Environment Score: " << environment_score << endl;
 }
 
-// Add a facility to the plan
+//Add a facility to the plan
 void Plan::addFacility(Facility* facility) {
     underConstruction.push_back(facility);
 }
 
 
 
-// Convert the plan to a string
+//Convert the plan to a string
 const string Plan::toString() const {
     return "Plan ID: " + to_string(plan_id) +
            ", Settlement: " + settlement.getName() +
