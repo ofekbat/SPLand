@@ -2,11 +2,11 @@
 #include <iostream>
 using std::to_string;
 
-//Constructor
+//constructor
 Settlement::Settlement(const string &name, SettlementType type)
     : name(name), type(type) {}
 
-//Getters
+//getters
 const string& Settlement::getName() const {
     return name;
 }
@@ -15,7 +15,16 @@ SettlementType Settlement::getType() const {
     return type;
 }
 
-const string Settlement::toString() const {
-    //TO DO:
-    return "Settlement: " + name + ", Type: " + to_string(static_cast<int>(type));
+const std::string Settlement::toString() const {
+    std::string c;
+    
+    if (static_cast<int>(type) == 0) {
+        c = "VILLAGE";
+    } else if (static_cast<int>(type) == 1) {
+        c = "CITY";
+    } else{
+        c = "METROPOLIS";
+    }
+
+    return "Settlement: " + name + ", Type: " + c;
 }

@@ -12,7 +12,8 @@ int main(int argc, char** argv){
     }
     string configurationFile = argv[1];
     Simulation simulation(configurationFile);
-    simulation.start();
+    simulation.toString();
+    // simulation.start();
     if(backup!=nullptr){
     	delete backup;
     	backup = nullptr;

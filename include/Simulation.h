@@ -24,6 +24,7 @@ class Simulation {
         void step();
         void close();
         void open();
+        std::string toString() const;
 
     private:
         bool isRunning;
