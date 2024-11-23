@@ -1,6 +1,3 @@
-# Please implement your Makefile rules and targets below.
-# Customize this file to define how to build your project.
-
 # Define the name of the output binary
 TARGET = simulation
 
@@ -17,7 +14,6 @@ OBJECTS = $(SOURCES:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
 # Compiler and flags
 CXX = g++
 CXXFLAGS = -std=c++11 -I$(INC_DIR) -Wall -g
-CXXFLAGS = -std=c++11 -Iinclude -Wall -g
 
 # Default target: build the executable
 all: $(TARGET)

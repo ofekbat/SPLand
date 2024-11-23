@@ -43,34 +43,3 @@ Simulation::Simulation(const std::string &configFilePath) : isRunning(false), pl
         }
     }
 }
-
-std::string Simulation::toString() const {
-    std::ostringstream oss;
-
-    oss << "Settlements:\n";
-    for (const auto &settlement : settlements) {
-        oss << "- Name: " << settlement.getName()
-            << ", Type: " << static_cast<int>(settlement.getType()) << "\n";
-    }
-
-    oss << "\nFacilities Options:\n";
-    for (const auto &facility : facilitiesOptions) {
-        oss << "- Name: " << facility.getName()
-            << ", Category: " << static_cast<int>(facility.getCategory())
-            << ", Price: " << facility.getCost()
-            << ", Life Quality: " << facility.getLifeQualityScore()
-            << ", Economy: " << facility.getEconomyScore()
-            << ", Environment: " << facility.getEnvironmentScore()
-            << "\n";
-    }
-
-    oss << "\nPlans:\n";
-    for (const auto &plan : plans) {
-        oss << "- Plan ID: " << plan.toString() << "\n"; // Assuming Plan has a toString()
-    }
-
-    oss << "\nSimulation Status:\n";
-    oss << (isRunning ? "Running" : "Stopped") << "\n";
-
-    return oss.str();
-}
