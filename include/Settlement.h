@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
+
 using std::string;
 using std::vector;
 
@@ -13,13 +14,18 @@ enum class SettlementType {
 };
 
 class Settlement {
-    public:
-        Settlement(const string &name, SettlementType type);
-        const string &getName() const;
-        SettlementType getType() const;
-        const string toString() const;
+public:
+    //rule of 5 - beacuse name is const can do only 3
+    Settlement(const string &name, SettlementType type);
+    Settlement(const Settlement &other);
+    Settlement(Settlement &&other);
+    ~Settlement();
 
-        private:
-            const string name;
-            SettlementType type;
+    const string &getName() const;
+    SettlementType getType() const;
+    const string toString() const;
+
+private:
+    const string name;
+    SettlementType type;
 };

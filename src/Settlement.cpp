@@ -1,13 +1,23 @@
 #include "Settlement.h"
-#include <iostream>
-using std::to_string;
+#include <utility>
 
-//constructor
+//constractor
 Settlement::Settlement(const string &name, SettlementType type)
     : name(name), type(type) {}
 
+//copy constructor
+Settlement::Settlement(const Settlement &other)
+    : name(other.name), type(other.type) {}
+
+//move constructor
+Settlement::Settlement(Settlement &&other)
+    : name(std::move(other.name)), type(other.type) {}
+
+//destractor
+Settlement::~Settlement() {}
+
 //getters
-const string& Settlement::getName() const {
+const string &Settlement::getName() const {
     return name;
 }
 
@@ -15,16 +25,15 @@ SettlementType Settlement::getType() const {
     return type;
 }
 
-const std::string Settlement::toString() const {
-    std::string c;
-    
-    if (static_cast<int>(type) == 0) {
+
+const string Settlement::toString() const {
+    string c;
+    if (type == SettlementType::VILLAGE) {
         c = "VILLAGE";
-    } else if (static_cast<int>(type) == 1) {
+    } else if (type == SettlementType::CITY) {
         c = "CITY";
-    } else{
+    } else {
         c = "METROPOLIS";
     }
-
     return "Settlement: " + name + ", Type: " + c;
 }
