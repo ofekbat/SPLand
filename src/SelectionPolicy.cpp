@@ -67,9 +67,11 @@ BalancedSelection* BalancedSelection::clone() const {
 // EconomySelection implementation
 EconomySelection::EconomySelection() : lastSelectedIndex(-1) {}
 
+//TO DO:
 const FacilityType& EconomySelection::selectFacility(const vector<FacilityType>& facilitiesOptions) {
-    for (size_t i = 0; i < facilitiesOptions.size(); ++i) {
-        size_t index = (lastSelectedIndex + 1 + i) % facilitiesOptions.size();
+    int size = facilitiesOptions.size();
+    for (int i = 0; i < size; ++i) {
+        int index = (lastSelectedIndex + i) % size;
         if (facilitiesOptions[index].getCategory() == FacilityCategory::Economy) {
             lastSelectedIndex = index;
             return facilitiesOptions[index];
@@ -89,9 +91,11 @@ EconomySelection* EconomySelection::clone() const {
 // SustainabilitySelection implementation
 SustainabilitySelection::SustainabilitySelection() : lastSelectedIndex(-1) {}
 
+//TO DO:
 const FacilityType& SustainabilitySelection::selectFacility(const vector<FacilityType>& facilitiesOptions) {
-    for (size_t i = 0; i < facilitiesOptions.size(); ++i) {
-        size_t index = (lastSelectedIndex + 1 + i) % facilitiesOptions.size();
+    int size = facilitiesOptions.size();
+    for (int i = 0; i < size; ++i) {
+        int index = (lastSelectedIndex + i) % size;
         if (facilitiesOptions[index].getCategory() == FacilityCategory::Environment) {
             lastSelectedIndex = index;
             return facilitiesOptions[index];
