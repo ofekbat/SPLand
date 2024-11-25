@@ -42,7 +42,7 @@ Facility::Facility(const string &name, const string &settlementName, const Facil
       timeLeft(price) {}
 
 //Constructor (based on FacilityType)
-Facility::Facility(FacilityType &type, const string &settlementName)
+Facility::Facility(const FacilityType &type, const string &settlementName)
     : FacilityType(type),
       settlementName(settlementName),
       status(FacilityStatus::UNDER_CONSTRUCTIONS),

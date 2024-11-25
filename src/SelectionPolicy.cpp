@@ -1,10 +1,12 @@
 #include "SelectionPolicy.h"
+#include <stdexcept>
+#include <climits>
 
 NaiveSelection::NaiveSelection() : lastSelectedIndex(-1) {}
 
 const FacilityType& NaiveSelection::selectFacility(const vector<FacilityType>& facilitiesOptions) {
     lastSelectedIndex++;
-    if (lastSelectedIndex >= facilitiesOptions.size()) {
+    if (lastSelectedIndex >= static_cast<int>(facilitiesOptions.size())) {
         lastSelectedIndex = 0;
     }
     return facilitiesOptions[lastSelectedIndex];
@@ -24,32 +26,21 @@ BalancedSelection::BalancedSelection(int lifeQ, int eco, int env)
 const FacilityType& BalancedSelection::selectFacility(const vector<FacilityType>& facilitiesOptions) {
     int minDifference = INT_MAX;
     const FacilityType* bestFacility = nullptr;
+for (const auto& facility : facilitiesOptions) {
+    int lifeQualityScore = LifeQualityScore + facility.getLifeQualityScore();
+    int economyScore = EconomyScore + facility.getEconomyScore();
+    int environmentScore = EnvironmentScore + facility.getEnvironmentScore();
 
-    for (const auto& facility : facilitiesOptions) {
-        int maxScore = std::max({
-            LifeQualityScore + facility.getLifeQualityImpact(),
-            EconomyScore + facility.getEconomyImpact(),
-            EnvironmentScore + facility.getEnvironmentImpact()
-        });
+    int maxScore = std::max(std::max(lifeQualityScore, economyScore), environmentScore);
+    int minScore = std::min(std::min(lifeQualityScore, economyScore), environmentScore);
 
-        int minScore = std::min({
-            LifeQualityScore + facility.getLifeQualityImpact(),
-            EconomyScore + facility.getEconomyImpact(),
-            EnvironmentScore + facility.getEnvironmentImpact()
-        });
+    int difference = maxScore - minScore;
 
-        int difference = maxScore - minScore;
-        if (difference < minDifference) {
-            minDifference = difference;
-            bestFacility = &facility;
-        }
+    if (difference < minDifference) {
+        minDifference = difference;
+        bestFacility = &facility;
     }
-
-    if (!bestFacility) {
-        static FacilityType defaultFacility;
-        return defaultFacility;
-    }
-
+}
     return *bestFacility;
 }
 
@@ -64,15 +55,15 @@ BalancedSelection* BalancedSelection::clone() const {
 EconomySelection::EconomySelection() : lastSelectedIndex(-1) {}
 
 const FacilityType& EconomySelection::selectFacility(const vector<FacilityType>& facilitiesOptions) {
-    for (size_t i = 0; i < facilitiesOptions.size(); ++i) {
-        size_t index = (lastSelectedIndex + 1 + i) % facilitiesOptions.size();
-        if (facilitiesOptions[index].getCategory() == FacilityCategory::Economy) {
+    for (int i = 0; i < static_cast<int>(facilitiesOptions.size()); ++i) {
+        int index = (lastSelectedIndex + 1 + i) % facilitiesOptions.size();
+        if (facilitiesOptions[index].getCategory() == FacilityCategory::ECONOMY) {
             lastSelectedIndex = index;
             return facilitiesOptions[index];
         }
     }
-    static FacilityType defaultFacility;
-    return defaultFacility;
+    //TO DO:
+    throw std::runtime_error("No facility found"); // ברירת מחדל אם אי אפשר להחזיר ערך
 }
 
 const string EconomySelection::toString() const {
@@ -86,15 +77,14 @@ EconomySelection* EconomySelection::clone() const {
 SustainabilitySelection::SustainabilitySelection() : lastSelectedIndex(-1) {}
 
 const FacilityType& SustainabilitySelection::selectFacility(const vector<FacilityType>& facilitiesOptions) {
-    for (size_t i = 0; i < facilitiesOptions.size(); ++i) {
-        size_t index = (lastSelectedIndex + 1 + i) % facilitiesOptions.size();
-        if (facilitiesOptions[index].getCategory() == FacilityCategory::Environment) {
+    for (int i = 0; i < static_cast<int>(facilitiesOptions.size()); ++i) {
+        int index = (lastSelectedIndex + 1 + i) % facilitiesOptions.size();
+        if (facilitiesOptions[index].getCategory() == FacilityCategory::ENVIRONMENT) {
             lastSelectedIndex = index;
             return facilitiesOptions[index];
         }
     }
-    static FacilityType defaultFacility;
-    return defaultFacility;
+    throw std::runtime_error("No facility found"); // ברירת מחדל אם אי אפשר להחזיר ערך
 }
 
 const string SustainabilitySelection::toString() const {

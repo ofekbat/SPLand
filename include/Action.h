@@ -1,9 +1,14 @@
 #pragma once
 #include <string>
 #include <vector>
-#include "Simulation.h"
+//changed
+class Simulation;
+
 enum class SettlementType;
 enum class FacilityCategory;
+
+//added
+using std::string;
 
 enum class ActionStatus{
     COMPLETED, ERROR
