@@ -186,16 +186,16 @@ bool Simulation::isSettlementExists(const string &settlementName) {
 }
 
 Settlement &Simulation::getSettlement(const string &settlementName) {
-    try{
+    try {
         for (auto &settlement : settlements) {
-
             if (settlement->getName() == settlementName) {
                 return *settlement;
             }
         }
     } catch (const std::exception& e) {
-            std::cout << "Error: " << e.what() << std::endl;
-        }
+        std::cout << "Error: " << e.what() << std::endl;
+    }
+    throw std::runtime_error("Settlement not found: " + settlementName);
 }
 
 Plan &Simulation::getPlan(const int planID) {
