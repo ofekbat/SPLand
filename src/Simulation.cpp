@@ -44,17 +44,81 @@ Simulation::Simulation(const std::string &configFilePath) : isRunning(false), pl
 }
 
 void Simulation::start() {
+    std::vector<std::string> args;
     isRunning = true;
     std::cout << "The simulation has started" << std::endl;
     std::string command;
     while (isRunning) {
         std::getline(std::cin, command);
+        
+        args = Auxiliary::parseArguments(command);
+        if (args.empty()) {
+            std::cout << "Error: No action provided" << std::endl;
+            return;
+        }
         try {
-            std::vector<std::string> Auxiliary::parseArguments(const std::string& line) {
+            const std::string& actionType = args[0];
+            BaseAction* action = nullptr; // פעולה זמנית
 
-            executeCommand(command); // Implement executeCommand to handle user commands
+        
+            if (actionType == "step") {
+                if (args.size() != 2) {
+                    std::cout << "Error: Invalid arguments for step action" << std::endl;
+                    return;
+                }
+                int steps = std::stoi(args[1]);
+                action = new SimulateStep(steps);
+                action->act(*this);
+                addAction(action);
+
+            } else if (actionType == "plan") {
+                if (args.size() != 3) {
+                    std::cout << "Error: Invalid arguments for plan action" << std::endl;
+                    return;
+                }
+                action = new AddPlan(args[1], args[2]);
+                action->act(*this);
+                addAction(action);
+
+            } else if (actionType == "facility") {
+                if (args.size() != 6) {
+                    std::cout << "Error: Invalid arguments for facility action" << std::endl;
+                    return;
+                }
+                FacilityCategory category = static_cast<FacilityCategory>(std::stoi(args[2]));
+                int price = std::stoi(args[3]);
+                int lifeQualityScore = std::stoi(args[4]);
+                int economyScore = std::stoi(args[5]);
+                int environmentScore = std::stoi(args[6]);
+                action = new AddFacility(args[1], category, price, lifeQualityScore, economyScore, environmentScore);
+                action->act(*this);
+                addAction(action);
+            } else if (actionType == "settlement") {
+                if (args.size() != 3)
+                {
+                    std::cout << "Error: Invalid arguments for settlement action" << std::endl;
+                    return;
+                }
+                SettlementType settlementType = static_cast<SettlementType>(std::stoi(args[2]));
+                action = new AddSettlement(args[1], settlementType);
+                action->act(*this);
+                addAction(action);
+
+            } else if (actionType == "close") {
+                action = new Close();
+                action->act(*this);
+                addAction(action);
+                isRunning = false;
+            } else {
+                std::cout << "Error: Unknown action \"" << actionType << "\"" << std::endl;
+            }
+
+            if (action) {
+                action->act(*this); // מבצע את הפעולה
+                addAction(action); // מוסיף ל-log (ה-lifetime מנוהל כאן)
+            }
         } catch (const std::exception& e) {
-            std::cerr << "Error: " << e.what() << std::endl;
+            std::cout << "Error: " << e.what() << std::endl;
         }
     }
 }
