@@ -1,6 +1,9 @@
-#include <iostream>
+
 #include "Action.h"
 #include "Simulation.h"
+#include <iostream>
+#include <vector>
+#include <algorithm>
 
 using std::cout;
 using std::endl;
@@ -80,4 +83,177 @@ const string AddPlan::toString() const {
 
 AddPlan *AddPlan::clone() const {
     return new AddPlan(*this);
+}
+
+
+//AddSettlement class
+AddSettlement::AddSettlement(const string &settlementName, SettlementType settlementType)
+    : settlementName(settlementName), settlementType(settlementType) {}
+
+void AddSettlement::act(Simulation &simulation) {
+    if (simulation.isSettlementExists(settlementName)) {
+        error("Settlement already exists");
+        return;
+    }
+    Settlement* newSettlement = new Settlement(settlementName, settlementType);
+    if (!simulation.addSettlement(newSettlement)) {
+        delete newSettlement; // ניקוי זיכרון אם הפעולה נכשלה
+        error("Failed to add settlement");
+        return;
+    }
+    complete();
+}
+
+const string AddSettlement::toString() const {
+    return "AddSettlement " + settlementName + " " + std::to_string(static_cast<int>(settlementType));
+}
+
+AddSettlement *AddSettlement::clone() const {
+    return new AddSettlement(*this);
+}
+
+//AddFacility class
+AddFacility::AddFacility(const string &facilityName, const FacilityCategory facilityCategory,
+                         const int price, const int lifeQualityScore, const int economyScore,
+                         const int environmentScore)
+    : facilityName(facilityName), facilityCategory(facilityCategory), price(price),
+      lifeQualityScore(lifeQualityScore), economyScore(economyScore), environmentScore(environmentScore) {}
+
+void AddFacility::act(Simulation &simulation) {
+    FacilityType newFacility(facilityName, facilityCategory, price, lifeQualityScore, economyScore, environmentScore);
+    if (!simulation.addFacility(newFacility)) {
+        error("Facility already exists");
+        return;
+    }
+    complete();
+}
+
+const string AddFacility::toString() const {
+    return "AddFacility " + facilityName + " " + std::to_string(static_cast<int>(facilityCategory)) +
+           " " + std::to_string(price) + " " + std::to_string(lifeQualityScore) +
+           " " + std::to_string(economyScore) + " " + std::to_string(environmentScore);
+}
+
+AddFacility *AddFacility::clone() const {
+    return new AddFacility(*this);
+}
+
+
+//PrintPlanStatus class
+PrintPlanStatus::PrintPlanStatus(int planId) : planId(planId) {}
+
+void PrintPlanStatus::act(Simulation &simulation) {
+    // if (!simulation.isPlanExists(planId)) {
+    //     error("Plan doesn’t exist");
+    //     return;
+    // }
+    cout << simulation.getPlan(planId).toString() << endl;
+    complete();
+}
+
+const string PrintPlanStatus::toString() const {
+    return "PrintPlanStatus " + std::to_string(planId);
+}
+
+PrintPlanStatus *PrintPlanStatus::clone() const {
+    return new PrintPlanStatus(*this);
+}
+
+
+//ChangePlanPolicy class
+ChangePlanPolicy::ChangePlanPolicy(const int planId, const string &newPolicy)
+    : planId(planId), newPolicy(newPolicy) {}
+
+void ChangePlanPolicy::act(Simulation &simulation) {
+    // if (!simulation.isPlanExists(planId)) {
+    //     error("Cannot change selection policy");
+    //     return;
+    // }
+    // if (!simulation.changePlanPolicy(planId, newPolicy)) {
+    //     error("Cannot change selection policy");
+    //     return;
+    // }
+    complete();
+}
+
+const string ChangePlanPolicy::toString() const {
+    return "ChangePlanPolicy " + std::to_string(planId) + " " + newPolicy;
+}
+
+ChangePlanPolicy *ChangePlanPolicy::clone() const {
+    return new ChangePlanPolicy(*this);
+}
+
+
+//Close class
+Close::Close() {}
+
+void Close::act(Simulation &simulation) {
+    simulation.close();
+    complete();
+}
+
+const string Close::toString() const {
+    return "Close";
+}
+
+Close *Close::clone() const {
+    return new Close(*this);
+}
+
+
+//PrintActionsLog class
+PrintActionsLog::PrintActionsLog() {}
+
+void PrintActionsLog::act(Simulation &simulation) {
+    // for (const auto &action : simulation.getActionLog()) {
+    //     cout << action->toString() << " " 
+    //          << (action->getStatus() == ActionStatus::COMPLETED ? "COMPLETED" : "ERROR") << endl;
+    // }
+    complete();
+}
+
+const string PrintActionsLog::toString() const {
+    return "PrintActionsLog";
+}
+
+PrintActionsLog *PrintActionsLog::clone() const {
+    return new PrintActionsLog(*this);
+}
+
+
+//BackupSimulation class
+BackupSimulation::BackupSimulation() {}
+
+void BackupSimulation::act(Simulation &simulation) {
+    simulation.backUp();
+    complete();
+}
+
+const string BackupSimulation::toString() const {
+    return "BackupSimulation";
+}
+
+BackupSimulation *BackupSimulation::clone() const {
+    return new BackupSimulation(*this);
+}
+
+
+//RestoreSimulation class
+RestoreSimulation::RestoreSimulation() {}
+
+void RestoreSimulation::act(Simulation &simulation) {
+    if (!simulation.restore()) {
+        error("No backup available");
+        return;
+    }
+    complete();
+}
+
+const string RestoreSimulation::toString() const {
+    return "RestoreSimulation";
+}
+
+RestoreSimulation *RestoreSimulation::clone() const {
+    return new RestoreSimulation(*this);
 }

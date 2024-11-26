@@ -44,22 +44,8 @@ Simulation::Simulation(const std::string &configFilePath) : isRunning(false), pl
 }
 
 void Simulation::start() {
-    isRunning = true;
-    std::cout << "The simulation has started" << std::endl;
-    std::string command;
-    while (isRunning) {
-        std::getline(std::cin, command);
-        try {
-            std::vector<std::string> Auxiliary::parseArguments(const std::string& line) {
-
-            executeCommand(command); // Implement executeCommand to handle user commands
-        } catch (const std::exception& e) {
-            std::cerr << "Error: " << e.what() << std::endl;
-        }
-    }
+    cout << "The simulation has started" << endl;
 }
-
-
 void Simulation::addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy) {
     plans.emplace_back(planCounter++, settlement, selectionPolicy, facilitiesOptions);
 }
@@ -126,5 +112,18 @@ void Simulation::close() {
     settlements.clear();
     actionsLog.clear();
     cout << "Simulation closed" << endl;
+}
+
+Simulation* backup = nullptr;
+
+void Simulation::backUp() {
+    if (backup) delete backup; 
+    backup = new Simulation(*this); 
+}
+
+bool Simulation::restore() {
+    if (!backup) return false;
+    *this = *backup; 
+    return true;
 }
 

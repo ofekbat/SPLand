@@ -10,6 +10,9 @@ using std::vector;
 class BaseAction;
 class SelectionPolicy;
 
+extern Simulation* backup; 
+
+
 class Simulation {
     public:
         Simulation(const string &configFilePath);
@@ -24,15 +27,18 @@ class Simulation {
         void step();
         void close();
         void open();
+        void backUp();
+        bool restore();
+
 
     private:
         bool isRunning;
         int planCounter; //For assigning unique plan IDs
 
         //changed!!
-        vector<master_ptr<BaseAction>> actionsLog; 
+        vector<master_ptr<BaseAction>> actionsLog;
+        
         vector<Plan> plans;
         vector<Settlement*> settlements;
         vector<FacilityType> facilitiesOptions;
-
 };

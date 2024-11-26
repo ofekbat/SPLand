@@ -77,9 +77,6 @@ const FacilityStatus& Facility::getStatus() const {
 }
 
 const string Facility::toString() const {
-    return "Facility: " + getName() +
-           ", Settlement: " + settlementName +
-           ", Status: " + (status == FacilityStatus::UNDER_CONSTRUCTIONS ? "Under Construction" : "Operational") +
-           ", Time Left: " + std::to_string(timeLeft) +
-           ", Category: " + std::to_string(static_cast<int>(getCategory()));
+    return "Facility: " + getName() + "\n" +
+           "Status: " + (status == FacilityStatus::UNDER_CONSTRUCTIONS ? "Under Construction" : "Operational") + "\n";
 }

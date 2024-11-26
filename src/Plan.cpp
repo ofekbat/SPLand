@@ -55,6 +55,9 @@ void Plan::printStatus() {
     cout << "Life Quality Score: " << life_quality_score << endl;
     cout << "Economy Score: " << economy_score << endl;
     cout << "Environment Score: " << environment_score << endl;
+        for (const auto& facilityPtr : facilities) {
+            cout << facilityPtr.get()->toString() << endl;
+        }
 }
     
 void Plan::addFacility(Facility* facility) {
@@ -62,7 +65,8 @@ void Plan::addFacility(Facility* facility) {
 }
 
 const string Plan::toString() const {
-    return "Plan ID: " + to_string(plan_id) +
-           ", Settlement: " + settlement.getName() +
-           ", Status: " + (status == PlanStatus::AVALIABLE ? "Available" : "Completed");
+   return "Plan ID: " + to_string(plan_id) + "\n" +
+       "Settlement Name: " + settlement.getName() + "\n" +
+       "Plan Status: " + (status == PlanStatus::AVALIABLE ? "Available" : "Completed");
+
 }
