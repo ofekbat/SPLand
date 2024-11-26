@@ -14,7 +14,7 @@ Simulation::Simulation(const std::string &configFilePath) : isRunning(false), pl
         if (arguments[0] == "settlement") {
             Settlement settlement(arguments[1], static_cast<SettlementType>(std::stoi(arguments[2])));
             settlements.push_back(&settlement);
-            std::cout << "i push settlements" << std::endl;
+            std::cout << "i push settlements with sett name of : " + settlement.getName() << std::endl;
         } else if (arguments[0] == "facility") {
             FacilityType facility(arguments[1],
                                   static_cast<FacilityCategory>(std::stoi(arguments[2])),
@@ -187,12 +187,14 @@ bool Simulation::isSettlementExists(const string &settlementName) {
 }
 
 Settlement &Simulation::getSettlement(const string &settlementName) {
+    std::cout << "The sett i look for is : " + settlementName << std::endl;
     for (auto &settlement : settlements) {
+        std::cout << "The sett is : " + settlement->getName() << std::endl;
         if (settlement->getName() == settlementName) {
             return *settlement;
         }
     }
-    return;
+        throw std::runtime_error("sett not found");
 }
 
 Plan &Simulation::getPlan(const int planID) {
