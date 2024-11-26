@@ -12,9 +12,8 @@ Simulation::Simulation(const std::string &configFilePath) : isRunning(false), pl
     while (std::getline(configFile, line)) {
         std::vector<std::string> arguments = Auxiliary::parseArguments(line);
         if (arguments[0] == "settlement") {
-            Settlement settlement(arguments[1], static_cast<SettlementType>(std::stoi(arguments[2])));
-            settlements.push_back(&settlement);
-            std::cout << "i push settlements with sett name of : " + settlement.getName() << std::endl;
+            Settlement* settlement = new Settlement(arguments[1], static_cast<SettlementType>(std::stoi(arguments[2])));
+            settlements.push_back(settlement); 
         } else if (arguments[0] == "facility") {
             FacilityType facility(arguments[1],
                                   static_cast<FacilityCategory>(std::stoi(arguments[2])),
@@ -23,7 +22,7 @@ Simulation::Simulation(const std::string &configFilePath) : isRunning(false), pl
                                   std::stoi(arguments[5]),
                                   std::stoi(arguments[6]));
             facilitiesOptions.push_back(facility);
-            std::cout << "i push facility" << std::endl;
+
         } else if (arguments[0] == "plan") {
             Settlement &settlement = getSettlement(arguments[1]);
             SelectionPolicy *policy = nullptr;
@@ -40,7 +39,6 @@ Simulation::Simulation(const std::string &configFilePath) : isRunning(false), pl
             Plan plan(planCounter, settlement, policy, facilitiesOptions);
             planCounter++;
             plans.push_back(plan);
-            std::cout << "i push plan" << std::endl;
         }
     }
 
@@ -187,14 +185,16 @@ bool Simulation::isSettlementExists(const string &settlementName) {
 }
 
 Settlement &Simulation::getSettlement(const string &settlementName) {
-    std::cout << "The sett i look for is : " + settlementName << std::endl;
-    for (auto &settlement : settlements) {
-        std::cout << "The sett is : " + settlement->getName() << std::endl;
-        if (settlement->getName() == settlementName) {
-            return *settlement;
+    try{
+        for (auto &settlement : settlements) {
+
+            if (settlement->getName() == settlementName) {
+                return *settlement;
+            }
         }
-    }
-        throw std::runtime_error("sett not found");
+    } catch (const std::exception& e) {
+            std::cout << "Error: " << e.what() << std::endl;
+        }
 }
 
 Plan &Simulation::getPlan(const int planID) {

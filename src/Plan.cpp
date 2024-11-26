@@ -38,16 +38,31 @@ void Plan::setSelectionPolicy(SelectionPolicy *newPolicy) {
     selectionPolicy = master_ptr<SelectionPolicy>(newPolicy);
 }
 
+
 void Plan::step() {
+
     for (auto& facility : underConstruction) {
-        if (facility.get()->step() == FacilityStatus::OPERATIONAL) {
+        FacilityStatus currentStatus = facility.get()->step();
+
+        if (currentStatus == FacilityStatus::OPERATIONAL) {
             facilities.push_back(std::move(facility));
         }
     }
-    underConstruction.erase(remove_if(underConstruction.begin(), underConstruction.end(),
-        [](const master_ptr<Facility>& facility) { return facility.get()->getStatus() == FacilityStatus::OPERATIONAL; }),
-        underConstruction.end());
+    for (auto it = underConstruction.begin(); it != underConstruction.end();) {
+        if ((*it).get()->getStatus() == FacilityStatus::OPERATIONAL) {
+            it = underConstruction.erase(it);
+        } else {
+            ++it;
+        }
+    }
+    if (underConstruction.empty() && !facilities.empty()) {
+        status = PlanStatus::AVALIABLE;
+    } else {
+        status = PlanStatus::BUSY;
+    }
+
 }
+
 void Plan::printStatus() {
     cout << toString() << endl;
     cout << "Facilities under construction: " << underConstruction.size() << endl;
@@ -67,6 +82,6 @@ void Plan::addFacility(Facility* facility) {
 const string Plan::toString() const {
    return "Plan ID: " + to_string(plan_id) + "\n" +
        "Settlement Name: " + settlement.getName() + "\n" +
-       "Plan Status: " + (status == PlanStatus::AVALIABLE ? "Available" : "Completed");
+       "Plan Status: " + (status == PlanStatus::AVALIABLE ? "Available" : "BUSY");
 
 }
