@@ -22,7 +22,9 @@ class Simulation {
         bool addSettlement(Settlement *settlement);
         bool addFacility(FacilityType facility);
         bool isSettlementExists(const string &settlementName);
+        bool isPlanExists(int plan_id); //check if exist
         Settlement &getSettlement(const string &settlementName);
+        const vector<master_ptr<BaseAction>>& getActionsLog() const; //getter for the actions
         Plan &getPlan(const int planID);
         void step();
         void close();

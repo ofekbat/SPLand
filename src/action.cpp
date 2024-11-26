@@ -143,10 +143,10 @@ AddFacility *AddFacility::clone() const {
 PrintPlanStatus::PrintPlanStatus(int planId) : planId(planId) {}
 
 void PrintPlanStatus::act(Simulation &simulation) {
-    // if (!simulation.isPlanExists(planId)) {
-    //     error("Plan doesn’t exist");
-    //     return;
-    // }
+    if (!simulation.isPlanExists(planId)) {
+        error("Plan doesn’t exist");
+        return;
+    }
     cout << simulation.getPlan(planId).toString() << endl;
     complete();
 }
@@ -165,10 +165,10 @@ ChangePlanPolicy::ChangePlanPolicy(const int planId, const string &newPolicy)
     : planId(planId), newPolicy(newPolicy) {}
 
 void ChangePlanPolicy::act(Simulation &simulation) {
-    // if (!simulation.isPlanExists(planId)) {
-    //     error("Cannot change selection policy");
-    //     return;
-    // }
+    if (!simulation.isPlanExists(planId)) {
+        error("Cannot change selection policy");
+        return;
+    }
     // if (!simulation.changePlanPolicy(planId, newPolicy)) {
     //     error("Cannot change selection policy");
     //     return;
@@ -206,10 +206,10 @@ Close *Close::clone() const {
 PrintActionsLog::PrintActionsLog() {}
 
 void PrintActionsLog::act(Simulation &simulation) {
-    // for (const auto &action : simulation.getActionLog()) {
-    //     cout << action->toString() << " " 
-    //          << (action->getStatus() == ActionStatus::COMPLETED ? "COMPLETED" : "ERROR") << endl;
-    // }
+    for (const auto &action : simulation.getActionsLog()) {
+        cout << action.get()->toString() << " " 
+             << (action.get()->getStatus() == ActionStatus::COMPLETED ? "COMPLETED" : "ERROR") << endl;
+    }
     complete();
 }
 

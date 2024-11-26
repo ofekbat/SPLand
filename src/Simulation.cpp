@@ -44,7 +44,6 @@ Simulation::Simulation(const std::string &configFilePath) : isRunning(false), pl
 }
 
 void Simulation::start() {
-    cout << "The simulation has started" << endl;
     std::vector<std::string> args;
     isRunning = true;
     std::cout << "The simulation has started" << std::endl;
@@ -191,16 +190,27 @@ void Simulation::close() {
     cout << "Simulation closed" << endl;
 }
 
-Simulation* backup = nullptr;
-
 void Simulation::backUp() {
     if (backup) delete backup; 
     backup = new Simulation(*this); 
 }
 
 bool Simulation::restore() {
-    if (!backup) return false;
-    *this = *backup; 
-    return true;
+    // if (!backup) return false;
+    // *this = *backup; 
+     return true;
+}
+
+bool Simulation::isPlanExists(int plan_id) {
+    for (const auto& plan : plans) {
+        if (plan.getPlanId() == plan_id) {
+            return true;
+        }
+    }
+    return false;
+}
+
+const vector<master_ptr<BaseAction>>& Simulation::getActionsLog() const {
+    return actionsLog;
 }
 
