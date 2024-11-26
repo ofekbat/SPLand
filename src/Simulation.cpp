@@ -11,10 +11,10 @@ Simulation::Simulation(const std::string &configFilePath) : isRunning(false), pl
     std::string line;
     while (std::getline(configFile, line)) {
         std::vector<std::string> arguments = Auxiliary::parseArguments(line);
-
         if (arguments[0] == "settlement") {
             Settlement settlement(arguments[1], static_cast<SettlementType>(std::stoi(arguments[2])));
             settlements.push_back(&settlement);
+            std::cout << "i push settlements" << std::endl;
         } else if (arguments[0] == "facility") {
             FacilityType facility(arguments[1],
                                   static_cast<FacilityCategory>(std::stoi(arguments[2])),
@@ -23,6 +23,7 @@ Simulation::Simulation(const std::string &configFilePath) : isRunning(false), pl
                                   std::stoi(arguments[5]),
                                   std::stoi(arguments[6]));
             facilitiesOptions.push_back(facility);
+            std::cout << "i push facility" << std::endl;
         } else if (arguments[0] == "plan") {
             Settlement &settlement = getSettlement(arguments[1]);
             SelectionPolicy *policy = nullptr;
@@ -36,18 +37,21 @@ Simulation::Simulation(const std::string &configFilePath) : isRunning(false), pl
             } else if (arguments[2] == "env") {
                 policy = new SustainabilitySelection();
             }
-
-            Plan plan(planCounter++, settlement, policy, facilitiesOptions);
+            Plan plan(planCounter, settlement, policy, facilitiesOptions);
+            planCounter++;
             plans.push_back(plan);
+            std::cout << "i push plan" << std::endl;
         }
     }
+
+    backup = nullptr;
 }
 
 void Simulation::start() {
     std::vector<std::string> args;
     isRunning = true;
-    std::cout << "The simulation has started" << std::endl;
     std::string command;
+    std::cout << "The simulation has started" << std::endl;
     while (isRunning) {
         std::getline(std::cin, command);
         
@@ -58,7 +62,7 @@ void Simulation::start() {
         }
         try {
             const std::string& actionType = args[0];
-            BaseAction* action = nullptr; // פעולה זמנית
+            BaseAction* action = nullptr; 
 
         
             if (actionType == "step") {
@@ -103,7 +107,30 @@ void Simulation::start() {
                 action = new AddSettlement(args[1], settlementType);
                 action->act(*this);
                 addAction(action);
+                } else if (actionType == "planStatus") { 
+                    if (args.size() != 2) {
+                        std::cout << "Error: Invalid arguments for planStatus action" << std::endl;
+                        return;
+                    }
+                int planID = std::stoi(args[1]);
+                Plan& plan = getPlan(planID);
+                plan.printStatus();
+            } else if (actionType == "backup") {
+                backUp();
+                std::cout << "Simulation state has been backed up." << std::endl;
 
+            } else if (actionType == "restore") {
+                if (restore()) {
+                    std::cout << "Simulation state has been restored from backup." << std::endl;
+                } else {
+                    std::cout << "Error: No backup available to restore." << std::endl;
+                }
+
+            } else if (actionType == "log") {
+                for (const auto& action : actionsLog) {
+                    std::cout << action.get()->toString() << std::endl;
+                }
+                
             } else if (actionType == "close") {
                 action = new Close();
                 action->act(*this);
@@ -114,8 +141,8 @@ void Simulation::start() {
             }
 
             if (action) {
-                action->act(*this); // מבצע את הפעולה
-                addAction(action); // מוסיף ל-log (ה-lifetime מנוהל כאן)
+                action->act(*this); 
+                addAction(action); 
             }
         } catch (const std::exception& e) {
             std::cout << "Error: " << e.what() << std::endl;
@@ -165,7 +192,7 @@ Settlement &Simulation::getSettlement(const string &settlementName) {
             return *settlement;
         }
     }
-    throw std::runtime_error("Settlement not found");
+    return;
 }
 
 Plan &Simulation::getPlan(const int planID) {
