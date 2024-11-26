@@ -1,9 +1,10 @@
+#include <iostream>
 #include "Action.h"
 #include "Simulation.h"
-#include <iostream>
 
 using std::cout;
 using std::endl;
+using std::string;
 
 // BaseAction Implementation
 BaseAction::BaseAction() : errorMsg(""), status(ActionStatus::COMPLETED) {}

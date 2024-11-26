@@ -56,8 +56,9 @@ EconomySelection::EconomySelection() : lastSelectedIndex(-1) {}
 
 //TO DO:
 const FacilityType& EconomySelection::selectFacility(const vector<FacilityType>& facilitiesOptions) {
-    for (int i = 0; i < static_cast<int>(facilitiesOptions.size()); ++i) {
-        int index = (lastSelectedIndex + 1 + i) % facilitiesOptions.size();
+    int size = static_cast<int>(facilitiesOptions.size());
+    for (int i = 0; i < size; ++i) {
+        int index = (lastSelectedIndex + 1 + i) % size;
         if (facilitiesOptions[index].getCategory() == FacilityCategory::ECONOMY) {
             lastSelectedIndex = index;
             return facilitiesOptions[index];
@@ -79,8 +80,9 @@ SustainabilitySelection::SustainabilitySelection() : lastSelectedIndex(-1) {}
 
 //TO DO:
 const FacilityType& SustainabilitySelection::selectFacility(const vector<FacilityType>& facilitiesOptions) {
-    for (int i = 0; i < static_cast<int>(facilitiesOptions.size()); ++i) {
-        int index = (lastSelectedIndex + 1 + i) % facilitiesOptions.size();
+    int size = static_cast<int>(facilitiesOptions.size());
+    for (int i = 0; i < size; ++i) {
+        int index = (lastSelectedIndex + 1 + i) % size;
         if (facilitiesOptions[index].getCategory() == FacilityCategory::ENVIRONMENT) {
             lastSelectedIndex = index;
             return facilitiesOptions[index];
