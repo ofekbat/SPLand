@@ -21,7 +21,7 @@ Simulation::Simulation(const std::string &configFilePath) : isRunning(false), pl
                                   std::stoi(arguments[4]),
                                   std::stoi(arguments[5]),
                                   std::stoi(arguments[6]));
-            facilitiesOptions.push_back(facility);
+            facilitiesOptions.push_back(std::move(facility));
 
         } else if (arguments[0] == "plan") {
             Settlement &settlement = getSettlement(arguments[1]);
@@ -189,14 +189,12 @@ Settlement &Simulation::getSettlement(const string &settlementName) {
         for (auto &settlement : settlements) {
 
             if (settlement->getName() == settlementName) {
-            std::cout << "Settlement: " << settlement->getName() << std::endl;
-
                 return *settlement;
             }
         }
     } catch (const std::exception& e) {
             std::cout << "Error: " << e.what() << std::endl;
-        }
+    }
 }
 
 Plan &Simulation::getPlan(const int planID) {
