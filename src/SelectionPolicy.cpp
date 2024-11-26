@@ -56,16 +56,9 @@ EconomySelection::EconomySelection() : lastSelectedIndex(-1) {}
 
 //TO DO:
 const FacilityType& EconomySelection::selectFacility(const vector<FacilityType>& facilitiesOptions) {
-<<<<<<< HEAD
     for (int i = 0; i < static_cast<int>(facilitiesOptions.size()); ++i) {
         int index = (lastSelectedIndex + 1 + i) % facilitiesOptions.size();
         if (facilitiesOptions[index].getCategory() == FacilityCategory::ECONOMY) {
-=======
-    int size = facilitiesOptions.size();
-    for (int i = 0; i < size; ++i) {
-        int index = (lastSelectedIndex + i) % size;
-        if (facilitiesOptions[index].getCategory() == FacilityCategory::Economy) {
->>>>>>> bbd2ae4d78eeeee08521b1cd52b66179f8708bcb
             lastSelectedIndex = index;
             return facilitiesOptions[index];
         }
@@ -86,16 +79,9 @@ SustainabilitySelection::SustainabilitySelection() : lastSelectedIndex(-1) {}
 
 //TO DO:
 const FacilityType& SustainabilitySelection::selectFacility(const vector<FacilityType>& facilitiesOptions) {
-<<<<<<< HEAD
     for (int i = 0; i < static_cast<int>(facilitiesOptions.size()); ++i) {
         int index = (lastSelectedIndex + 1 + i) % facilitiesOptions.size();
         if (facilitiesOptions[index].getCategory() == FacilityCategory::ENVIRONMENT) {
-=======
-    int size = facilitiesOptions.size();
-    for (int i = 0; i < size; ++i) {
-        int index = (lastSelectedIndex + i) % size;
-        if (facilitiesOptions[index].getCategory() == FacilityCategory::Environment) {
->>>>>>> bbd2ae4d78eeeee08521b1cd52b66179f8708bcb
             lastSelectedIndex = index;
             return facilitiesOptions[index];
         }
