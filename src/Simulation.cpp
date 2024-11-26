@@ -41,13 +41,14 @@ Simulation::Simulation(const std::string &configFilePath) : isRunning(false), pl
             plans.push_back(plan);
         }
     }
+
+    backup = nullptr;
 }
 
 void Simulation::start() {
     cout << "The simulation has started" << endl;
     std::vector<std::string> args;
     isRunning = true;
-    std::cout << "The simulation has started" << std::endl;
     std::string command;
     while (isRunning) {
         std::getline(std::cin, command);
@@ -59,7 +60,7 @@ void Simulation::start() {
         }
         try {
             const std::string& actionType = args[0];
-            BaseAction* action = nullptr; // פעולה זמנית
+            BaseAction* action = nullptr; 
 
         
             if (actionType == "step") {
@@ -104,7 +105,30 @@ void Simulation::start() {
                 action = new AddSettlement(args[1], settlementType);
                 action->act(*this);
                 addAction(action);
+                } else if (actionType == "planStatus") { 
+                    if (args.size() != 2) {
+                        std::cout << "Error: Invalid arguments for planStatus action" << std::endl;
+                        return;
+                    }
+                int planID = std::stoi(args[1]);
+                Plan& plan = getPlan(planID);
+                plan.printStatus();
+            } else if (actionType == "backup") {
+                backUp();
+                std::cout << "Simulation state has been backed up." << std::endl;
 
+            } else if (actionType == "restore") {
+                if (restore()) {
+                    std::cout << "Simulation state has been restored from backup." << std::endl;
+                } else {
+                    std::cout << "Error: No backup available to restore." << std::endl;
+                }
+
+            } else if (actionType == "log") {
+                for (const auto& action : actionsLog) {
+                    std::cout << action.get()->toString() << std::endl;
+                }
+                
             } else if (actionType == "close") {
                 action = new Close();
                 action->act(*this);
@@ -115,8 +139,8 @@ void Simulation::start() {
             }
 
             if (action) {
-                action->act(*this); // מבצע את הפעולה
-                addAction(action); // מוסיף ל-log (ה-lifetime מנוהל כאן)
+                action->act(*this); 
+                addAction(action); 
             }
         } catch (const std::exception& e) {
             std::cout << "Error: " << e.what() << std::endl;
@@ -191,16 +215,14 @@ void Simulation::close() {
     cout << "Simulation closed" << endl;
 }
 
-Simulation* backup = nullptr;
-
 void Simulation::backUp() {
     if (backup) delete backup; 
     backup = new Simulation(*this); 
 }
 
-bool Simulation::restore() {
-    if (!backup) return false;
-    *this = *backup; 
-    return true;
-}
+ bool Simulation::restore() {
+//     if (!backup) return false;
+//     *this = *backup; 
+        return true;
+ }
 
