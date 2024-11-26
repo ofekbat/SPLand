@@ -40,12 +40,15 @@ void Plan::setSelectionPolicy(SelectionPolicy *newPolicy) {
 
 
 void Plan::step() {
-
+    
     for (auto& facility : underConstruction) {
         FacilityStatus currentStatus = facility.get()->step();
 
         if (currentStatus == FacilityStatus::OPERATIONAL) {
             facilities.push_back(std::move(facility));
+            life_quality_score += facility.get()->getLifeQualityScore();
+            economy_score += facility.get()->getEconomyScore();
+            environment_score += facility.get()->getEnvironmentScore();
         }
     }
     for (auto it = underConstruction.begin(); it != underConstruction.end();) {
@@ -65,8 +68,7 @@ void Plan::step() {
 
 void Plan::printStatus() {
     cout << toString() << endl;
-    cout << "Facilities under construction: " << underConstruction.size() << endl;
-    cout << "Operational facilities: " << facilities.size() << endl;
+    cout << "SelectionPolicy: " << selectionPolicy.get()->toString() << endl;
     cout << "Life Quality Score: " << life_quality_score << endl;
     cout << "Economy Score: " << economy_score << endl;
     cout << "Environment Score: " << environment_score << endl;

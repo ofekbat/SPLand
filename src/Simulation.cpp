@@ -21,7 +21,7 @@ Simulation::Simulation(const std::string &configFilePath) : isRunning(false), pl
                                   std::stoi(arguments[4]),
                                   std::stoi(arguments[5]),
                                   std::stoi(arguments[6]));
-            facilitiesOptions.push_back(facility);
+            facilitiesOptions.push_back(std::move(facility));
 
         } else if (arguments[0] == "plan") {
             Settlement &settlement = getSettlement(arguments[1]);
@@ -147,6 +147,7 @@ void Simulation::start() {
         }
     }
 }
+
 void Simulation::addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy) {
     plans.emplace_back(planCounter++, settlement, selectionPolicy, facilitiesOptions);
 }
