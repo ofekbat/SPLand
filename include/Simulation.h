@@ -4,18 +4,19 @@
 #include "Facility.h"
 #include "Plan.h"
 #include "Settlement.h"
+#include "Action.h"
 using std::string;
 using std::vector;
 
 class BaseAction;
 class SelectionPolicy;
 
-extern Simulation* backup; 
-
-
 class Simulation {
     public:
         Simulation(const string &configFilePath);
+        ~Simulation();
+        Simulation(const Simulation &other);
+        Simulation& operator=(const Simulation &other);
         void start();
         void addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy);
         void addAction(BaseAction *action);
@@ -24,7 +25,7 @@ class Simulation {
         bool isSettlementExists(const string &settlementName);
         bool isPlanExists(int plan_id); //check if exist
         Settlement &getSettlement(const string &settlementName);
-        const vector<master_ptr<BaseAction>>& getActionsLog() const; //getter for the actions
+        const vector<BaseAction*>& getActionsLog() const; //getter for the actions
         Plan &getPlan(const int planID);
         void step();
         void close();
@@ -36,11 +37,10 @@ class Simulation {
     private:
         bool isRunning;
         int planCounter; //For assigning unique plan IDs
-
-        //changed!!
-        vector<master_ptr<BaseAction>> actionsLog;
-        
+        vector<BaseAction*> actionsLog;
         vector<Plan> plans;
         vector<Settlement*> settlements;
         vector<FacilityType> facilitiesOptions;
 };
+
+    extern Simulation* backup; 

@@ -3,7 +3,6 @@
 #include "Facility.h"
 #include "Settlement.h"
 #include "SelectionPolicy.h"
-#include "master_ptr.h"
 using std::vector;
 
 enum class PlanStatus {
@@ -14,6 +13,11 @@ enum class PlanStatus {
 class Plan {
     public:
         Plan(const int planId, const Settlement &settlement, SelectionPolicy *selectionPolicy, const vector<FacilityType> &facilityOptions);
+         ~Plan(); // Destructor
+        Plan(const Plan &other); // Copy constructor
+        Plan &operator=(const Plan &other); // Copy assignment operator
+        void copyFrom(const Plan &other);
+
         const int getlifeQualityScore() const;
         const int getEconomyScore() const;
         const int getEnvironmentScore() const;
@@ -28,15 +32,10 @@ class Plan {
     private:
         int plan_id;
         const Settlement &settlement;
-        //changed
-        master_ptr<SelectionPolicy> selectionPolicy; //What happens if we change this to a reference?
-        PlanStatus status;
-        
-        //changed - 2
-        vector<master_ptr<Facility>> facilities;
-        vector<master_ptr<Facility>> underConstruction;
+        SelectionPolicy *selectionPolicy; //What happens if we change this to a reference?
+        PlanStatus status;        
+        vector<Facility*> facilities;
+        vector<Facility*> underConstruction;
         const vector<FacilityType> &facilityOptions;
         int life_quality_score, economy_score, environment_score;
-        //add beacuse the use of master_ptr
-        mutable vector<Facility*> cachedFacilities;
 };

@@ -6,6 +6,39 @@
 FacilityType::FacilityType(const string &name, const FacilityCategory category, const int price, const int lifeQuality_score, const int economy_score, const int environment_score)
     : name(name), category(category), price(price), lifeQuality_score(lifeQuality_score), economy_score(economy_score), environment_score(environment_score) {}
 
+// Destructor
+FacilityType::~FacilityType() {
+}
+
+FacilityType::FacilityType(const FacilityType& other)
+    : name(other.name),
+      category(other.category),
+      price(other.price),
+      lifeQuality_score(other.lifeQuality_score),
+      economy_score(other.economy_score),
+      environment_score(other.environment_score) {}
+
+FacilityType& FacilityType::operator=(const FacilityType& other) {
+    if (this != &other) {
+    }
+    return *this;
+}
+
+
+FacilityType::FacilityType(FacilityType &&other) noexcept
+    : name(std::move(other.name)),
+      category(other.category),
+      price(other.price),
+      lifeQuality_score(other.lifeQuality_score),
+      economy_score(other.economy_score),
+      environment_score(other.environment_score) {}
+
+FacilityType &FacilityType::operator=(FacilityType &&other) noexcept {
+    if (this != &other) {
+    }
+    return *this;
+}
+
 //Getters
 const string& FacilityType::getName() const {
     return name;
@@ -40,14 +73,6 @@ Facility::Facility(const string &name, const string &settlementName, const Facil
       status(FacilityStatus::UNDER_CONSTRUCTIONS),
     //TO DO:
       timeLeft(price) {}
-
-//Constructor (based on FacilityType)
-Facility::Facility(const FacilityType &type, const string &settlementName)
-    : FacilityType(type),
-      settlementName(settlementName),
-      status(FacilityStatus::UNDER_CONSTRUCTIONS),
-    //TO DO:
-      timeLeft(type.getCost()) {}
 
 const string& Facility::getSettlementName() const {
     return settlementName;

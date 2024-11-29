@@ -45,6 +45,64 @@ Simulation::Simulation(const std::string &configFilePath) : isRunning(false), pl
     backup = nullptr;
 }
 
+
+Simulation::~Simulation() {
+    for (BaseAction* action : actionsLog) {
+        delete action;
+    }
+    actionsLog.clear();
+
+    for (Settlement* settlement : settlements) {
+        delete settlement;
+    }
+    settlements.clear();
+}
+
+Simulation::Simulation(const Simulation &other)
+    : isRunning(other.isRunning),
+      planCounter(other.planCounter),
+      plans(other.plans),
+      facilitiesOptions(other.facilitiesOptions) 
+{
+    for (BaseAction* action : other.actionsLog) {
+        actionsLog.push_back(action->clone());  //using BaseAction clone() method
+    }
+
+    for (Settlement* settlement : other.settlements) {
+        settlements.push_back(new Settlement(*settlement)); //using Settlement has a copy constructor
+    }
+}
+
+Simulation& Simulation::operator=(const Simulation &other) {
+    if (this != &other) {
+        // Free existing resources
+        for (BaseAction* action : actionsLog) {
+            delete action;
+        }
+        actionsLog.clear();
+
+        for (Settlement* settlement : settlements) {
+            delete settlement;
+        }
+        settlements.clear();
+
+        isRunning = other.isRunning;
+        planCounter = other.planCounter;
+
+        plans = other.plans;
+        facilitiesOptions = other.facilitiesOptions;
+
+        for (BaseAction* action : other.actionsLog) {
+            actionsLog.push_back(action->clone()); //using BaseAction clone() method
+        }
+
+        for (Settlement* settlement : other.settlements) {
+            settlements.push_back(new Settlement(*settlement)); //using Settlement has a copy constructor
+        }
+    }
+    return *this;
+}
+
 void Simulation::start() {
     std::vector<std::string> args;
     isRunning = true;
@@ -126,7 +184,7 @@ void Simulation::start() {
 
             } else if (actionType == "log") {
                 for (const auto& action : actionsLog) {
-                    std::cout << action.get()->toString() << std::endl;
+                    std::cout << action->toString() << std::endl;
                 }
                 
             } else if (actionType == "close") {
@@ -153,7 +211,7 @@ void Simulation::addPlan(const Settlement &settlement, SelectionPolicy *selectio
 }
 
 void Simulation::addAction(BaseAction *action) {
-    actionsLog.push_back(master_ptr<BaseAction>(action));
+    actionsLog.push_back(action);
 }
 
 bool Simulation::addSettlement(Settlement *settlement) {
@@ -172,7 +230,7 @@ bool Simulation::addFacility(FacilityType facility) {
             return false;
         }
     }
-    facilitiesOptions.push_back(facility);
+    facilitiesOptions.push_back(std::move(facility));
     return true;
 }
 
@@ -240,7 +298,7 @@ bool Simulation::isPlanExists(int plan_id) {
     return false;
 }
 
-const vector<master_ptr<BaseAction>>& Simulation::getActionsLog() const {
+const vector<BaseAction*>& Simulation::getActionsLog() const {
     return actionsLog;
 }
 

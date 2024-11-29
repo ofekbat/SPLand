@@ -34,7 +34,7 @@ const string &BaseAction::getErrorMsg() const {
 SimulateStep::SimulateStep(const int numOfSteps) : numOfSteps(numOfSteps) {}
 
 void SimulateStep::act(Simulation &simulation) {
-    for (int i = 0; i < numOfSteps; ++i) {
+    for (int i = 0; i < numOfSteps; i++) {
         simulation.step();
     }
     complete();
@@ -207,8 +207,8 @@ PrintActionsLog::PrintActionsLog() {}
 
 void PrintActionsLog::act(Simulation &simulation) {
     for (const auto &action : simulation.getActionsLog()) {
-        cout << action.get()->toString() << " " 
-             << (action.get()->getStatus() == ActionStatus::COMPLETED ? "COMPLETED" : "ERROR") << endl;
+        cout << action->toString() << " " 
+             << (action->getStatus() == ActionStatus::COMPLETED ? "COMPLETED" : "ERROR") << endl;
     }
     complete();
 }

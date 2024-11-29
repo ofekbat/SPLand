@@ -15,7 +15,7 @@ enum class SettlementType {
 
 class Settlement {
 public:
-    //rule of 5 - beacuse name is const can do only 3
+    //rule of 3
     Settlement(const string &name, SettlementType type);
     Settlement(const Settlement &other);
     Settlement(Settlement &&other);

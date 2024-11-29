@@ -1,14 +1,12 @@
 #pragma once
 #include <string>
 #include <vector>
-//changed
-class Simulation;
-
 enum class SettlementType;
 enum class FacilityCategory;
 
 //added
 using std::string;
+class Simulation; // Forward declaration
 
 enum class ActionStatus{
     COMPLETED, ERROR

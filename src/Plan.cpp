@@ -5,9 +5,48 @@ using namespace std;
 
 //constructor
 Plan::Plan(const int planId, const Settlement &settlement, SelectionPolicy *selectionPolicy, const vector<FacilityType> &facilityOptions)
-    : plan_id(planId), settlement(settlement), selectionPolicy(master_ptr<SelectionPolicy>(selectionPolicy)),
+    : plan_id(planId), settlement(settlement), selectionPolicy(selectionPolicy),
       status(PlanStatus::AVALIABLE), facilities(), underConstruction(), 
-      facilityOptions(facilityOptions), life_quality_score(0), economy_score(0), environment_score(0), cachedFacilities() {}
+      facilityOptions(facilityOptions), life_quality_score(0), economy_score(0), environment_score(0) {}
+
+      Plan::~Plan() {
+    delete selectionPolicy;
+}
+
+Plan::Plan(const Plan &other) 
+    : plan_id(other.plan_id), 
+      settlement(other.settlement),
+      selectionPolicy(nullptr), 
+      status(other.status),
+      facilities(other.facilities),
+      underConstruction(other.underConstruction),
+      facilityOptions(other.facilityOptions),
+      life_quality_score(other.life_quality_score),
+      economy_score(other.economy_score),
+      environment_score(other.environment_score) {
+    copyFrom(other);
+}
+
+Plan &Plan::operator=(const Plan &other) {
+    if (this != &other) {
+        delete selectionPolicy;
+        copyFrom(other);
+    }
+    return *this;
+}
+
+void Plan::copyFrom(const Plan &other) {
+    plan_id = other.plan_id;
+    status = other.status;
+    facilities = other.facilities;
+    underConstruction = other.underConstruction;
+    life_quality_score = other.life_quality_score;
+    economy_score = other.economy_score;
+    environment_score = other.environment_score;
+
+    // Deep copy the selectionPolicy
+    selectionPolicy = other.selectionPolicy ? other.selectionPolicy->clone() : nullptr;
+}
 
 //getters
 const int Plan::getlifeQualityScore() const {
@@ -27,32 +66,28 @@ const int Plan::getEnvironmentScore() const {
 }
 
 const vector<Facility*>& Plan::getFacilities() const {
-    cachedFacilities.clear(); 
-    for (const auto& facility : facilities) {
-        cachedFacilities.push_back(facility.get()); 
-    }
-    return cachedFacilities; 
+    return facilities; 
 }
 
 void Plan::setSelectionPolicy(SelectionPolicy *newPolicy) {
-    selectionPolicy = master_ptr<SelectionPolicy>(newPolicy);
+    selectionPolicy = newPolicy;
 }
 
 
 void Plan::step() {
     
     for (auto& facility : underConstruction) {
-        FacilityStatus currentStatus = facility.get()->step();
+        FacilityStatus currentStatus = facility->step();
 
         if (currentStatus == FacilityStatus::OPERATIONAL) {
             facilities.push_back(std::move(facility));
-            life_quality_score += facility.get()->getLifeQualityScore();
-            economy_score += facility.get()->getEconomyScore();
-            environment_score += facility.get()->getEnvironmentScore();
+            life_quality_score += facility->getLifeQualityScore();
+            economy_score += facility->getEconomyScore();
+            environment_score += facility->getEnvironmentScore();
         }
     }
     for (auto it = underConstruction.begin(); it != underConstruction.end();) {
-        if ((*it).get()->getStatus() == FacilityStatus::OPERATIONAL) {
+        if ((*it)->getStatus() == FacilityStatus::OPERATIONAL) {
             it = underConstruction.erase(it);
         } else {
             ++it;
@@ -68,17 +103,17 @@ void Plan::step() {
 
 void Plan::printStatus() {
     cout << toString() << endl;
-    cout << "SelectionPolicy: " << selectionPolicy.get()->toString() << endl;
+    cout << "SelectionPolicy: " << selectionPolicy->toString() << endl;
     cout << "Life Quality Score: " << life_quality_score << endl;
     cout << "Economy Score: " << economy_score << endl;
     cout << "Environment Score: " << environment_score << endl;
         for (const auto& facilityPtr : facilities) {
-            cout << facilityPtr.get()->toString() << endl;
+            cout << facilityPtr->toString() << endl;
         }
 }
     
 void Plan::addFacility(Facility* facility) {
-    underConstruction.push_back(master_ptr<Facility>(facility));
+    underConstruction.push_back(facility);
 }
 
 const string Plan::toString() const {
