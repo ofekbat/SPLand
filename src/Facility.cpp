@@ -6,10 +6,6 @@
 FacilityType::FacilityType(const string &name, const FacilityCategory category, const int price, const int lifeQuality_score, const int economy_score, const int environment_score)
     : name(name), category(category), price(price), lifeQuality_score(lifeQuality_score), economy_score(economy_score), environment_score(environment_score) {}
 
-// Destructor
-FacilityType::~FacilityType() {
-}
-
 FacilityType::FacilityType(const FacilityType& other)
     : name(other.name),
       category(other.category),
@@ -23,7 +19,6 @@ FacilityType& FacilityType::operator=(const FacilityType& other) {
     }
     return *this;
 }
-
 
 FacilityType::FacilityType(FacilityType &&other) noexcept
     : name(std::move(other.name)),
@@ -73,6 +68,18 @@ Facility::Facility(const string &name, const string &settlementName, const Facil
       status(FacilityStatus::UNDER_CONSTRUCTIONS),
     //TO DO:
       timeLeft(price) {}
+
+#include "Facility.h"
+
+// Constructor: Creates a Facility based on a FacilityType and a settlement name
+Facility::Facility(const FacilityType &type, const string &settlementName)
+    : FacilityType(type),                     
+      settlementName(settlementName),         
+      status(FacilityStatus::UNDER_CONSTRUCTIONS), 
+
+      //TO DO:
+      timeLeft(10) {                          
+}
 
 const string& Facility::getSettlementName() const {
     return settlementName;

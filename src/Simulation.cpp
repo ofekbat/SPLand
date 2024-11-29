@@ -45,7 +45,6 @@ Simulation::Simulation(const std::string &configFilePath) : isRunning(false), pl
     backup = nullptr;
 }
 
-
 Simulation::~Simulation() {
     for (BaseAction* action : actionsLog) {
         delete action;

@@ -73,33 +73,51 @@ void Plan::setSelectionPolicy(SelectionPolicy *newPolicy) {
     selectionPolicy = newPolicy;
 }
 
+void Plan::update_score(int life, int economy, int envirmont){
+    life_quality_score += life;
+    economy_score += economy;
+    environment_score += envirmont;
+}
 
 void Plan::step() {
-    
-    for (auto& facility : underConstruction) {
-        FacilityStatus currentStatus = facility->step();
+    // Step 1: Update the status of facilities in underConstruction
+    for (auto it = underConstruction.begin(); it != underConstruction.end();) {
+        FacilityStatus currentStatus = (*it)->step();
 
         if (currentStatus == FacilityStatus::OPERATIONAL) {
-            facilities.push_back(std::move(facility));
-            life_quality_score += facility->getLifeQualityScore();
-            economy_score += facility->getEconomyScore();
-            environment_score += facility->getEnvironmentScore();
-        }
-    }
-    for (auto it = underConstruction.begin(); it != underConstruction.end();) {
-        if ((*it)->getStatus() == FacilityStatus::OPERATIONAL) {
+            facilities.push_back(std::move(*it));
             it = underConstruction.erase(it);
         } else {
             ++it;
         }
     }
+
+    // Step 2: Add new facilities to underConstruction based on construction limits
+    int constructionLimit = settlement.getConstructionLimit();
+    int size = static_cast<int>(underConstruction.size());
+    while (size < constructionLimit) {
+        try {
+            const FacilityType& selectedFacility = selectionPolicy->selectFacility(facilityOptions);
+
+            Facility* newFacility = new Facility(selectedFacility, settlement.getName());
+            underConstruction.push_back(newFacility);
+
+            update_score(selectedFacility.getLifeQualityScore(),
+                         selectedFacility.getEconomyScore(),
+                         selectedFacility.getEnvironmentScore());
+        } catch (std::exception& e) {
+            break;
+        }
+    }
+
+    // Step 3: Update the plan's status
     if (underConstruction.empty() && !facilities.empty()) {
         status = PlanStatus::AVALIABLE;
     } else {
         status = PlanStatus::BUSY;
     }
-
 }
+
 
 void Plan::printStatus() {
     cout << toString() << endl;
@@ -114,6 +132,7 @@ void Plan::printStatus() {
     
 void Plan::addFacility(Facility* facility) {
     underConstruction.push_back(facility);
+    update_score(facility->getLifeQualityScore(), facility->getEconomyScore(),facility->getEnvironmentScore());
 }
 
 const string Plan::toString() const {

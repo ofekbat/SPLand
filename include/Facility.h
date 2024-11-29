@@ -25,8 +25,7 @@ class FacilityType {
         FacilityType& operator=(const FacilityType& other);
         FacilityType(FacilityType &&other) noexcept; // Move constructor
         FacilityType &operator=(FacilityType &&other) noexcept; // Move assignment (deleted due to const members)
-        ~FacilityType();
-
+        
         const string &getName() const;
         int getCost() const;
         int getLifeQualityScore() const;

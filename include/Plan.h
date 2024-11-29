@@ -28,6 +28,7 @@ class Plan {
         const vector<Facility*> &getFacilities() const;
         void addFacility(Facility* facility);
         const string toString() const;
+        void update_score(int life, int economy, int envirmont);
 
     private:
         int plan_id;
