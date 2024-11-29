@@ -19,8 +19,6 @@ enum class FacilityCategory {
 class FacilityType {
     public:
         FacilityType(const string &name, const FacilityCategory category, const int price, const int lifeQuality_score, const int economy_score, const int environment_score);
-
-        // Rule of 5
         FacilityType(const FacilityType& other);
         FacilityType& operator=(const FacilityType& other);
         FacilityType(FacilityType &&other) noexcept; // Move constructor

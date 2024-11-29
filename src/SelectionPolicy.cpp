@@ -1,6 +1,7 @@
 #include "SelectionPolicy.h"
 #include <stdexcept>
 #include <climits>
+#include <iostream>
 
 NaiveSelection::NaiveSelection() : lastSelectedIndex(-1) {}
 
