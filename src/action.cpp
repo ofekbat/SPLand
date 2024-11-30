@@ -10,7 +10,7 @@ using std::endl;
 using std::string;
 
 // BaseAction Implementation
-BaseAction::BaseAction() : errorMsg(""), status(ActionStatus::COMPLETED) {}
+BaseAction::BaseAction() : errorMsg(""), status(ActionStatus::ERROR) {}
 
 ActionStatus BaseAction::getStatus() const {
     return status;
@@ -41,7 +41,7 @@ void SimulateStep::act(Simulation &simulation) {
 }
 
 const string SimulateStep::toString() const {
-    return "SimulateStep " + std::to_string(numOfSteps);
+    return "Step " + std::to_string(numOfSteps);
 }
 
 SimulateStep *SimulateStep::clone() const {
@@ -147,12 +147,12 @@ void PrintPlanStatus::act(Simulation &simulation) {
         error("Plan doesn’t exist");
         return;
     }
-    cout << simulation.getPlan(planId).toString() << endl;
+    simulation.getPlan(planId).printStatus();
     complete();
 }
 
 const string PrintPlanStatus::toString() const {
-    return "PrintPlanStatus " + std::to_string(planId);
+    return "PlanStatus " + std::to_string(planId);
 }
 
 PrintPlanStatus *PrintPlanStatus::clone() const {

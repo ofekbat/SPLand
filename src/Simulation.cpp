@@ -167,8 +167,7 @@ void Simulation::start() {
                         return;
                     }
                 int planID = std::stoi(args[1]);
-                Plan& plan = getPlan(planID);
-                plan.printStatus();
+                action = new PrintPlanStatus(planID);
             } else if (actionType == "backup") {
                 backUp();
             } else if (actionType == "restore") {
