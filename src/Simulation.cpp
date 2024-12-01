@@ -122,8 +122,10 @@ void Simulation::start() {
             if (actionType == "step") {
                 int steps = std::stoi(args[1]);
                 action = new SimulateStep(steps);
+
             } else if (actionType == "plan") {
                 action = new AddPlan(args[1], args[2]);
+
             } else if (actionType == "facility") {
                 FacilityCategory category = static_cast<FacilityCategory>(std::stoi(args[2]));
                 int price = std::stoi(args[3]);
@@ -131,8 +133,6 @@ void Simulation::start() {
                 int economyScore = std::stoi(args[5]);
                 int environmentScore = std::stoi(args[6]);
                 action = new AddFacility(args[1], category, price, lifeQualityScore, economyScore, environmentScore);
-                action->act(*this);
-                addAction(action);
             } else if (actionType == "settlement") {
                 SettlementType settlementType = static_cast<SettlementType>(std::stoi(args[2]));
                 action = new AddSettlement(args[1], settlementType);
@@ -142,23 +142,19 @@ void Simulation::start() {
             } else if (actionType == "backup") {
                 action = new BackupSimulation();
             } else if (actionType == "restore") {
-                if (restore()) {
-                    std::cout << "Simulation state has been restored from backup." << std::endl;
-                } else {
-                    std::cout << "Error: No backup available to restore." << std::endl;
-                }
-
+                action = new RestoreSimulation();
             } else if (actionType == "log") {
                 action = new PrintActionsLog();
-                
-            } else if (actionType == "close") {
+            } else if(actionType == "changePolicy"){
+                action = new ChangePlanPolicy(std::stoi(args[1]), args[2]);
+            }
+            else if (actionType == "close") {
                 action = new Close();
-                isRunning = false;
             } else {
                 std::cout << "Error: Unknown action \"" << actionType << "\"" << std::endl;
             }
 
-            if (action != nullptr) {
+            if (action) {
                 action->act(*this); 
                 addAction(action); 
             }
@@ -246,9 +242,15 @@ void Simulation::backUp() {
 }
 
 bool Simulation::restore() {
-    // if (!backup) return false;
-    // *this = *backup; 
-     return true;
+    if (!backup) {
+        std::cerr << "No backup available to restore." << std::endl;
+        return false;
+    }
+
+    // Replace the current simulation state with the backup
+    *this = *backup; // Using the copy assignment operator
+    std::cout << "Simulation restored successfully." << std::endl;
+    return true;
 }
 
 bool Simulation::isPlanExists(int plan_id) {

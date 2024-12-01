@@ -22,20 +22,26 @@ NaiveSelection* NaiveSelection::clone() const {
 }
 
 BalancedSelection::BalancedSelection(int lifeQ, int eco, int env)
-    : LifeQualityScore(lifeQ), EconomyScore(eco), EnvironmentScore(env) {}
+    : LifeQualityScore(lifeQ), EconomyScore(eco), EnvironmentScore(env),
+    lifeQUnderConstruction(0), ecoUnderConstruction(0), envUnderConstruction(0) {}
 
 const FacilityType& BalancedSelection::selectFacility(const vector<FacilityType>& facilitiesOptions) {
     int minDifference = INT_MAX;
+    int difference;
     const FacilityType* bestFacility = nullptr;
-for (const auto& facility : facilitiesOptions) {
-    int lifeQualityScore = LifeQualityScore + facility.getLifeQualityScore();
-    int economyScore = EconomyScore + facility.getEconomyScore();
-    int environmentScore = EnvironmentScore + facility.getEnvironmentScore();
+    int lifeQTemp = LifeQualityScore + lifeQUnderConstruction;
+    int ecoTemp = EconomyScore + ecoUnderConstruction;
+    int envTemp = EnvironmentScore + envUnderConstruction;
 
-    int maxScore = std::max(std::max(lifeQualityScore, economyScore), environmentScore);
-    int minScore = std::min(std::min(lifeQualityScore, economyScore), environmentScore);
+    for (const auto& facility : facilitiesOptions) {
+        int lifeQualityScore = lifeQTemp + facility.getLifeQualityScore();
+        int economyScore = ecoTemp + facility.getEconomyScore();
+        int environmentScore = envTemp + facility.getEnvironmentScore();
 
-    int difference = maxScore - minScore;
+        int maxScore = std::max(std::max(lifeQualityScore, economyScore), environmentScore);
+        int minScore = std::min(std::min(lifeQualityScore, economyScore), environmentScore);
+
+        difference = maxScore - minScore;
 
     if (difference < minDifference) {
         minDifference = difference;
@@ -51,6 +57,18 @@ const string BalancedSelection::toString() const {
 
 BalancedSelection* BalancedSelection::clone() const {
     return new BalancedSelection(*this);
+}
+
+void BalancedSelection::updateUnderConstruction(int lifeQ, int eco, int env) {
+    lifeQUnderConstruction += lifeQ;
+    ecoUnderConstruction += eco;
+    envUnderConstruction += env;
+}
+
+void BalancedSelection::updateMainScores(int lifeQ, int eco, int env) {
+    LifeQualityScore += lifeQ;
+    EconomyScore += eco;
+    EnvironmentScore += env;
 }
 
 EconomySelection::EconomySelection() : lastSelectedIndex(-1) {}

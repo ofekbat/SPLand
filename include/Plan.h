@@ -17,7 +17,7 @@ class Plan {
         Plan(const Plan &other); // Copy constructor
         Plan &operator=(const Plan &other); // Copy assignment operator
         void copyFrom(const Plan &other);
-
+        const std::vector<Facility*>& getUnderConstruction() const;
         const int getlifeQualityScore() const;
         const int getEconomyScore() const;
         const int getEnvironmentScore() const;

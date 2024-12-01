@@ -165,14 +165,44 @@ ChangePlanPolicy::ChangePlanPolicy(const int planId, const string &newPolicy)
     : planId(planId), newPolicy(newPolicy) {}
 
 void ChangePlanPolicy::act(Simulation &simulation) {
+    
     if (!simulation.isPlanExists(planId)) {
         error("Cannot change selection policy");
         return;
     }
-    // if (!simulation.changePlanPolicy(planId, newPolicy)) {
-    //     error("Cannot change selection policy");
-    //     return;
-    // }
+    Plan& plan = simulation.getPlan(planId);
+    if (newPolicy == "bal") {
+        // Retrieve current construction scores from the plan
+        int lifeQScore = plan.getlifeQualityScore();
+        int ecoScore = plan.getEconomyScore();
+        int envScore = plan.getEnvironmentScore();
+
+        int LifeQualityC = 0;
+        int EconomyC = 0;
+        int EnvironmentC = 0;
+        for (const Facility* facility : plan.getUnderConstruction()) {
+            LifeQualityC += facility->getLifeQualityScore();
+            EconomyC += facility->getEconomyScore();
+            EnvironmentC += facility->getEnvironmentScore();
+        }
+
+        // Create BalancedSelection with current scores
+        auto* balancedPolicy = new BalancedSelection(lifeQScore, ecoScore, envScore);
+        balancedPolicy->updateUnderConstruction(LifeQualityC, EconomyC, EnvironmentC);
+
+        // Update the plan's policy
+        plan.setSelectionPolicy(balancedPolicy);
+
+    } else if (newPolicy == "nve") {
+        plan.setSelectionPolicy(new NaiveSelection());
+    } else if (newPolicy == "eco") {
+        plan.setSelectionPolicy(new EconomySelection());
+    } else if (newPolicy == "env") {
+        plan.setSelectionPolicy(new SustainabilitySelection());
+    } else {
+        error("Invalid selection policy type: " + newPolicy);
+    }
+    
     complete();
 }
 
@@ -243,11 +273,11 @@ BackupSimulation *BackupSimulation::clone() const {
 RestoreSimulation::RestoreSimulation() {}
 
 void RestoreSimulation::act(Simulation &simulation) {
-    if (!simulation.restore()) {
-        error("No backup available");
-        return;
+    if (simulation.restore()) {
+        complete();
+    } else {
+        error("Restore failed: No backup available.");
     }
-    complete();
 }
 
 const string RestoreSimulation::toString() const {
