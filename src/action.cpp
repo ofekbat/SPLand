@@ -231,7 +231,7 @@ void BackupSimulation::act(Simulation &simulation) {
 }
 
 const string BackupSimulation::toString() const {
-    return "BackupSimulation";
+    return "Backup";
 }
 
 BackupSimulation *BackupSimulation::clone() const {

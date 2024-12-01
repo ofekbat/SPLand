@@ -136,8 +136,6 @@ void Simulation::start() {
             } else if (actionType == "settlement") {
                 SettlementType settlementType = static_cast<SettlementType>(std::stoi(args[2]));
                 action = new AddSettlement(args[1], settlementType);
-                action->act(*this);
-                addAction(action);
                 } else if (actionType == "planStatus") { 
                 int planID = std::stoi(args[1]);
                 action = new PrintPlanStatus(planID);
