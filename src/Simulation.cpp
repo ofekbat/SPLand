@@ -131,8 +131,6 @@ void Simulation::start() {
                 int economyScore = std::stoi(args[5]);
                 int environmentScore = std::stoi(args[6]);
                 action = new AddFacility(args[1], category, price, lifeQualityScore, economyScore, environmentScore);
-                action->act(*this);
-                addAction(action);
             } else if (actionType == "settlement") {
                 SettlementType settlementType = static_cast<SettlementType>(std::stoi(args[2]));
                 action = new AddSettlement(args[1], settlementType);
@@ -142,18 +140,11 @@ void Simulation::start() {
             } else if (actionType == "backup") {
                 action = new BackupSimulation();
             } else if (actionType == "restore") {
-                if (restore()) {
-                    std::cout << "Simulation state has been restored from backup." << std::endl;
-                } else {
-                    std::cout << "Error: No backup available to restore." << std::endl;
-                }
-
+                action = new RestoreSimulation();
             } else if (actionType == "log") {
                 action = new PrintActionsLog();
-                
             } else if (actionType == "close") {
                 action = new Close();
-                isRunning = false;
             } else {
                 std::cout << "Error: Unknown action \"" << actionType << "\"" << std::endl;
             }
