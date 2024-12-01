@@ -120,29 +120,11 @@ void Simulation::start() {
 
         
             if (actionType == "step") {
-                if (args.size() != 2) {
-                    std::cout << "Error: Invalid arguments for step action" << std::endl;
-                    return;
-                }
                 int steps = std::stoi(args[1]);
                 action = new SimulateStep(steps);
-                action->act(*this);
-                addAction(action);
-
             } else if (actionType == "plan") {
-                if (args.size() != 3) {
-                    std::cout << "Error: Invalid arguments for plan action" << std::endl;
-                    return;
-                }
                 action = new AddPlan(args[1], args[2]);
-                action->act(*this);
-                addAction(action);
-
             } else if (actionType == "facility") {
-                if (args.size() != 6) {
-                    std::cout << "Error: Invalid arguments for facility action" << std::endl;
-                    return;
-                }
                 FacilityCategory category = static_cast<FacilityCategory>(std::stoi(args[2]));
                 int price = std::stoi(args[3]);
                 int lifeQualityScore = std::stoi(args[4]);
@@ -152,24 +134,15 @@ void Simulation::start() {
                 action->act(*this);
                 addAction(action);
             } else if (actionType == "settlement") {
-                if (args.size() != 3)
-                {
-                    std::cout << "Error: Invalid arguments for settlement action" << std::endl;
-                    return;
-                }
                 SettlementType settlementType = static_cast<SettlementType>(std::stoi(args[2]));
                 action = new AddSettlement(args[1], settlementType);
                 action->act(*this);
                 addAction(action);
                 } else if (actionType == "planStatus") { 
-                    if (args.size() != 2) {
-                        std::cout << "Error: Invalid arguments for planStatus action" << std::endl;
-                        return;
-                    }
                 int planID = std::stoi(args[1]);
                 action = new PrintPlanStatus(planID);
             } else if (actionType == "backup") {
-                backUp();
+                action = new BackupSimulation();
             } else if (actionType == "restore") {
                 if (restore()) {
                     std::cout << "Simulation state has been restored from backup." << std::endl;
@@ -178,20 +151,16 @@ void Simulation::start() {
                 }
 
             } else if (actionType == "log") {
-                for (const auto& action : actionsLog) {
-                    std::cout << action->toString() << std::endl;
-                }
+                action = new PrintActionsLog();
                 
             } else if (actionType == "close") {
                 action = new Close();
-                action->act(*this);
-                addAction(action);
                 isRunning = false;
             } else {
                 std::cout << "Error: Unknown action \"" << actionType << "\"" << std::endl;
             }
 
-            if (action) {
+            if (action != nullptr) {
                 action->act(*this); 
                 addAction(action); 
             }
