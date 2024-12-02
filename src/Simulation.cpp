@@ -6,7 +6,14 @@
 using std::cout;
 using std::endl;
 
-Simulation::Simulation(const std::string &configFilePath) : isRunning(false), planCounter(0) {
+Simulation::Simulation(const std::string &configFilePath) : 
+    isRunning(false), 
+    planCounter(0), 
+    actionsLog(), 
+    plans(), 
+    settlements(), 
+    facilitiesOptions()
+{
     std::ifstream configFile(configFilePath);
     std::string line;
     while (std::getline(configFile, line)) {
@@ -59,8 +66,11 @@ Simulation::~Simulation() {
 Simulation::Simulation(const Simulation &other)
     : isRunning(other.isRunning),
       planCounter(other.planCounter),
+      actionsLog(),
       plans(other.plans),
-      facilitiesOptions(other.facilitiesOptions) 
+      settlements(),
+      facilitiesOptions(other.facilitiesOptions)
+      
 {
     for (BaseAction* action : other.actionsLog) {
         actionsLog.push_back(action->clone());  //using BaseAction clone() method
@@ -103,7 +113,7 @@ Simulation& Simulation::operator=(const Simulation &other) {
 
 void Simulation::start() {
     std::vector<std::string> args;
-    isRunning = true;
+    open();
     std::string command;
     std::cout << "The simulation has started" << std::endl;
     while (isRunning) {
@@ -233,6 +243,7 @@ void Simulation::close() {
     isRunning = false;
     settlements.clear();
     actionsLog.clear();
+    this->~Simulation();
     cout << "Simulation closed" << endl;
 }
 
@@ -265,4 +276,9 @@ bool Simulation::isPlanExists(int plan_id) {
 const vector<BaseAction*>& Simulation::getActionsLog() const {
     return actionsLog;
 }
+
+void Simulation::open(){
+    this->isRunning = true;
+}
+
 

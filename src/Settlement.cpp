@@ -16,6 +16,15 @@ Settlement::Settlement(Settlement &&other)
 //destractor
 Settlement::~Settlement() {}
 
+Settlement& Settlement::operator=(const Settlement& other) {
+    if (this != &other) {
+        this->~Settlement(); // Explicitly call the destructor
+        new (this) Settlement(other); // Reconstruct the object in-place
+    }
+    return *this;
+}
+
+
 //getters
 const string &Settlement::getName() const {
     return name;
@@ -25,7 +34,7 @@ SettlementType Settlement::getType() const {
     return type;
 }
 
- const int Settlement::getConstructionLimit() const{
+const int Settlement::getConstructionLimit() const{
     if (type == SettlementType::VILLAGE) {
         return 1;
     } else if (type == SettlementType::CITY) {

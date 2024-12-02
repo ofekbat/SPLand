@@ -5,9 +5,14 @@ using namespace std;
 
 //constructor
 Plan::Plan(const int planId, const Settlement &settlement, SelectionPolicy *selectionPolicy, const vector<FacilityType> &facilityOptions)
-    : plan_id(planId), settlement(settlement), selectionPolicy(selectionPolicy),
-      status(PlanStatus::AVALIABLE), facilities(), underConstruction(), 
-      facilityOptions(facilityOptions), life_quality_score(0), economy_score(0), environment_score(0) {}
+    : plan_id(planId), 
+    settlement(settlement), 
+    selectionPolicy(selectionPolicy),
+    status(PlanStatus::AVALIABLE), 
+    facilities(), 
+    underConstruction(),
+    facilityOptions(facilityOptions),
+    life_quality_score(0), economy_score(0), environment_score(0) {}
 
 Plan::~Plan() {
     for (Facility* facility : facilities) {
@@ -27,36 +32,43 @@ Plan::~Plan() {
 Plan::Plan(const Plan &other) 
     : plan_id(other.plan_id), 
       settlement(other.settlement),
-      selectionPolicy(nullptr), 
+      selectionPolicy(other.selectionPolicy ? other.selectionPolicy->clone() : nullptr), // TO DO: לבדוק
       status(other.status),
-      facilities(other.facilities),
-      underConstruction(other.underConstruction),
+      facilities(), 
+      underConstruction(),
       facilityOptions(other.facilityOptions),
       life_quality_score(other.life_quality_score),
       economy_score(other.economy_score),
-      environment_score(other.environment_score) {
-    copyFrom(other);
+      environment_score(other.environment_score)
+      {
+    
+    for (const auto& facility : other.facilities) {
+        facilities.push_back(facility ? new Facility(*facility) : nullptr);
+    }
+
+    for (const auto* facility : other.underConstruction) {
+        underConstruction.push_back(facility ? new Facility(*facility) : nullptr);
+    }
+    //TO DO: נתקלתי בבעיה עם ה const כי אי אפשר לעשות העתקה עמוקה רק לקחת את המצביע
+    //facilityOptions = other.facilityOptions;
 }
 
-Plan &Plan::operator=(const Plan &other) {
+Plan& Plan::operator=(const Plan& other) {
     if (this != &other) {
         delete selectionPolicy;
-        copyFrom(other);
+        for (auto* facility : facilities) {
+            delete facility;
+        }
+        facilities.clear();
+
+        for (auto* facility : underConstruction) {
+            delete facility;
+        }
+        underConstruction.clear();
+
+        new (this) Plan(other);
     }
     return *this;
-}
-
-void Plan::copyFrom(const Plan &other) {
-    plan_id = other.plan_id;
-    status = other.status;
-    facilities = other.facilities;
-    underConstruction = other.underConstruction;
-    life_quality_score = other.life_quality_score;
-    economy_score = other.economy_score;
-    environment_score = other.environment_score;
-
-    // Deep copy the selectionPolicy
-    selectionPolicy = other.selectionPolicy ? other.selectionPolicy->clone() : nullptr;
 }
 
 //getters
@@ -83,6 +95,14 @@ const int Plan::getEnvironmentScore() const {
 const vector<Facility*>& Plan::getFacilities() const {
     return facilities; 
 }
+const PlanStatus Plan::getStatus() const {
+    return status;
+}
+
+const Settlement Plan::getSettlement() const{
+    return settlement;
+}
+
 
 void Plan::setSelectionPolicy(SelectionPolicy *newPolicy) {
     if (newPolicy) {
@@ -101,6 +121,34 @@ void Plan::update_score(int life, int economy, int envirmont){
 }
 
 void Plan::step() {
+    //TO DO: החלפתי את הסדר תראה אם לזה התכוונת
+    // Step 2: Add new facilities to underConstruction based on construction limits
+    int constructionLimit = settlement.getConstructionLimit();
+    while (static_cast<int>(underConstruction.size()) < constructionLimit) {
+        try {
+            const FacilityType& selectedFacility = selectionPolicy->selectFacility(facilityOptions);
+
+            Facility* newFacility = new Facility(selectedFacility, settlement.getName());
+            underConstruction.push_back(newFacility);
+
+            if (BalancedSelection* balancedSelection = dynamic_cast<BalancedSelection*>(selectionPolicy)) {
+                // ההמרה הצליחה, ניתן להפעיל את הפונקציה
+                balancedSelection->updateUnderConstruction(
+                selectedFacility.getLifeQualityScore(),
+                selectedFacility.getEconomyScore(),
+                selectedFacility.getEnvironmentScore());
+            }
+            // if (typeid(selectedFacility) == typeid(BalancedSelection)) {
+            //     ((BalancedSelection)selectionPolicy)->updateUnderConstruction(newFacility->getLifeQualityScore(), newFacility->getEconomyScore(), newFacility->getEnvironmentScore());
+            // }
+            
+
+        } catch (const std::exception& e) {
+            cout << e.what()<<endl;
+            break;
+        }
+    }
+
     // Step 1: Update the status of facilities in underConstruction
     for (auto it = underConstruction.begin(); it != underConstruction.end();) {
         // Execute step() for each facility and check its status
@@ -129,33 +177,7 @@ void Plan::step() {
         }
     }
 
-    // Step 2: Add new facilities to underConstruction based on construction limits
-    int constructionLimit = settlement.getConstructionLimit();
-    while (static_cast<int>(underConstruction.size()) < constructionLimit) {
-        try {
-            const FacilityType& selectedFacility = selectionPolicy->selectFacility(facilityOptions);
-
-            Facility* newFacility = new Facility(selectedFacility, settlement.getName());
-            underConstruction.push_back(newFacility);
-
-            if (BalancedSelection* balancedSelection = dynamic_cast<BalancedSelection*>(selectionPolicy)) {
-                // ההמרה הצליחה, ניתן להפעיל את הפונקציה
-                balancedSelection->updateUnderConstruction(
-                selectedFacility.getLifeQualityScore(),
-                selectedFacility.getEconomyScore(),
-                selectedFacility.getEnvironmentScore());
-            }
-            // if (typeid(selectedFacility) == typeid(BalancedSelection)) {
-            //     ((BalancedSelection)selectionPolicy)->updateUnderConstruction(newFacility->getLifeQualityScore(), newFacility->getEconomyScore(), newFacility->getEnvironmentScore());
-            // }
-            
-
-        } catch (const std::exception& e) {
-            cout << e.what()<<endl;
-            break;
-        }
-    }
-
+    
     // Step 3: Update the plan's status
     if (static_cast<int>(underConstruction.size()) == constructionLimit) {
         status = PlanStatus::BUSY; // Plan is busy if underConstruction is full

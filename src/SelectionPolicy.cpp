@@ -3,9 +3,14 @@
 #include <climits>
 #include <iostream>
 
+//NAIVE-SELECTION
 NaiveSelection::NaiveSelection() : lastSelectedIndex(-1) {}
 
 const FacilityType& NaiveSelection::selectFacility(const vector<FacilityType>& facilitiesOptions) {
+    if (facilitiesOptions.empty()) {
+        throw std::runtime_error("No facilities available");
+    }
+
     lastSelectedIndex++;
     if (lastSelectedIndex >= static_cast<int>(facilitiesOptions.size())) {
         lastSelectedIndex = 0;
@@ -21,11 +26,16 @@ NaiveSelection* NaiveSelection::clone() const {
     return new NaiveSelection(*this);
 }
 
+//BALANCED-SELECTION
 BalancedSelection::BalancedSelection(int lifeQ, int eco, int env)
     : LifeQualityScore(lifeQ), EconomyScore(eco), EnvironmentScore(env),
     lifeQUnderConstruction(0), ecoUnderConstruction(0), envUnderConstruction(0) {}
 
 const FacilityType& BalancedSelection::selectFacility(const vector<FacilityType>& facilitiesOptions) {
+    if (facilitiesOptions.empty()) {
+        throw std::runtime_error("No facilities available");
+    }
+
     int minDifference = INT_MAX;
     int difference;
     const FacilityType* bestFacility = nullptr;
@@ -71,10 +81,14 @@ void BalancedSelection::updateMainScores(int lifeQ, int eco, int env) {
     EnvironmentScore += env;
 }
 
+
+//ECONOMY-SELECTION
 EconomySelection::EconomySelection() : lastSelectedIndex(-1) {}
 
-//TO DO:
 const FacilityType& EconomySelection::selectFacility(const vector<FacilityType>& facilitiesOptions) {
+    if (facilitiesOptions.empty()) {
+        throw std::runtime_error("No facilities available");
+    }
     int size = static_cast<int>(facilitiesOptions.size());
     for (int i = 0; i < size; ++i) {
         int index = (lastSelectedIndex + 1 + i) % size;
@@ -83,8 +97,7 @@ const FacilityType& EconomySelection::selectFacility(const vector<FacilityType>&
             return facilitiesOptions[index];
         }
     }
-    //TO DO:
-    throw std::runtime_error("No facility found"); // ברירת מחדל אם אי אפשר להחזיר ערך
+    throw std::runtime_error("No facility found"); 
 }
 
 const string EconomySelection::toString() const {
@@ -95,10 +108,14 @@ EconomySelection* EconomySelection::clone() const {
     return new EconomySelection(*this);
 }
 
+//SUSTAINABILITY-SELECTION
 SustainabilitySelection::SustainabilitySelection() : lastSelectedIndex(-1) {}
 
-//TO DO:
 const FacilityType& SustainabilitySelection::selectFacility(const vector<FacilityType>& facilitiesOptions) {
+    if (facilitiesOptions.empty()) {
+        throw std::runtime_error("No facilities available");
+    }
+
     int size = static_cast<int>(facilitiesOptions.size());
     for (int i = 0; i < size; ++i) {
         int index = (lastSelectedIndex + 1 + i) % size;
@@ -107,7 +124,7 @@ const FacilityType& SustainabilitySelection::selectFacility(const vector<Facilit
             return facilitiesOptions[index];
         }
     }
-    throw std::runtime_error("No facility found"); // ברירת מחדל אם אי אפשר להחזיר ערך
+    throw std::runtime_error("No facility found");
 }
 
 const string SustainabilitySelection::toString() const {
