@@ -1,35 +1,34 @@
 # Define the name of the output binary
-TARGET = simulation
+TARGET = bin/run
 
-# Define the source, include, and build directories
+# Define the source and include directories
 SRC_DIR = src
 INC_DIR = include
-BUILD_DIR = build
 
 # Find all source files in the source directory
 SOURCES = $(wildcard $(SRC_DIR)/*.cpp)
-# Define the object files to be created in the build directory
-OBJECTS = $(SOURCES:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
+# Define the object files to be created directly in the bin directory
+OBJECTS = $(SOURCES:$(SRC_DIR)/%.cpp=bin/%.o)
 
 # Compiler and flags
 CXX = g++
-CXXFLAGS = -std=c++11 -I$(INC_DIR) -Wall -g
+CXXFLAGS = -std=c++11 -I$(INC_DIR) -Wall -Weffc++ -g
 
 # Default target: build the executable
 all: $(TARGET)
 
 # Build the executable by linking all object files
-$(TARGET): $(OBJECTS)
+$(TARGET): $(OBJECTS) | bin
 	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJECTS)
 
 # Rule to build object files from source files
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp | $(BUILD_DIR)
+bin/%.o: $(SRC_DIR)/%.cpp | bin
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# Create the build directory if it doesn't exist
-$(BUILD_DIR):
-	mkdir -p $(BUILD_DIR)
+# Create the bin directory if it doesn't exist
+bin:
+	mkdir -p bin
 
 # Clean up all generated files
 clean:
-	rm -rf $(BUILD_DIR) $(TARGET)
+	rm -rf bin/*
