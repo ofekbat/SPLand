@@ -40,7 +40,6 @@ Simulation::Simulation(const std::string &configFilePath) : isRunning(false), pl
             plans.push_back(plan);
         }
     }
-
     backup = nullptr;
 }
 
@@ -117,8 +116,6 @@ void Simulation::start() {
         try {
             const std::string& actionType = args[0];
             BaseAction* action = nullptr; 
-
-        
             if (actionType == "step") {
                 int steps = std::stoi(args[1]);
                 action = new SimulateStep(steps);
@@ -226,8 +223,6 @@ void Simulation::step() {
 
 void Simulation::close() {
     isRunning = false;
-    settlements.clear();
-    actionsLog.clear();
     cout << "Simulation closed" << endl;
 }
 
