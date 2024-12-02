@@ -97,7 +97,7 @@ void AddSettlement::act(Simulation &simulation) {
     }
     Settlement* newSettlement = new Settlement(settlementName, settlementType);
     if (!simulation.addSettlement(newSettlement)) {
-        delete newSettlement; // ניקוי זיכרון אם הפעולה נכשלה
+        delete newSettlement; 
         error("Failed to add settlement");
         return;
     }
