@@ -82,7 +82,6 @@ Simulation::Simulation(const Simulation &other)
 
 Simulation& Simulation::operator=(const Simulation &other) {
     if (this != &other) {
-        // Free existing resources
         for (BaseAction* action : actionsLog) {
             delete action;
         }
@@ -156,15 +155,14 @@ void Simulation::start() {
             }
             else if (actionType == "close") {
                 action = new Close();
-                action->act(*this);
-                delete action;
             }
-            if (action && dynamic_cast<Close*>(action) == nullptr) {
+            if (action) {
                     action->act(*this);
                     addAction(action);
             }
             if(action == nullptr){
                 std::cout << "Error: Unknown action \"" << actionType << "\"" << std::endl;
+                delete action;
             }
     }
 }
@@ -245,16 +243,6 @@ bool Simulation::restore() {
         return false;
     }
 
-    for (BaseAction* action : actionsLog) {
-        delete action;
-    }
-    actionsLog.clear();
-
-    for (Settlement* settlement : settlements) {
-        delete settlement;
-    }
-    settlements.clear();
-
     *this = *backup;
     return true;
 }
@@ -281,6 +269,6 @@ void Simulation::close() {
     for(auto &plan : plans){
         plan.closetoString();
     }
-    cout << "/n" << endl;
+    cout << "\n" << endl;
 }
 
