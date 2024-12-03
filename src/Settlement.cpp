@@ -10,6 +10,10 @@ const string &Settlement::getName() const {
     return name;
 }
 
+Settlement::Settlement(const Settlement& other)
+    : name(other.name), type(other.type) {
+}
+
 SettlementType Settlement::getType() const {
     return type;
 }

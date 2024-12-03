@@ -106,6 +106,7 @@ const int Plan::getEnvironmentScore() const {
 const vector<Facility*>& Plan::getFacilities() const {
     return facilities; 
 }
+
 const PlanStatus Plan::getStatus() const {
     return status;
 }
@@ -114,10 +115,9 @@ const Settlement Plan::getSettlement() const{
     return settlement;
 }
 
-
 void Plan::setSelectionPolicy(SelectionPolicy *newPolicy) {
     if (newPolicy) {
-        delete selectionPolicy; // Free the old policy
+        delete selectionPolicy; 
     }
     selectionPolicy = newPolicy;
 }
@@ -132,48 +132,38 @@ void Plan::update_score(int life, int economy, int envirmont){
 }
 
 void Plan::step() {
-    //TO DO: החלפתי את הסדר תראה אם לזה התכוונת
-    // Step 2: Add new facilities to underConstruction based on construction limits
+
     int constructionLimit = settlement.getConstructionLimit();
-    while (static_cast<int>(underConstruction.size()) < constructionLimit) {
-        try {
+    // Step 1: check if the plan is available - if yes, procces to step 2, if not, jump to step 3
+    if(status == PlanStatus::AVALIABLE){
+
+        //step 2: construct new facilities
+        while (static_cast<int>(underConstruction.size()) < constructionLimit) {
             const FacilityType& selectedFacility = selectionPolicy->selectFacility(facilityOptions);
 
             Facility* newFacility = new Facility(selectedFacility, settlement.getName());
             underConstruction.push_back(newFacility);
 
             if (BalancedSelection* balancedSelection = dynamic_cast<BalancedSelection*>(selectionPolicy)) {
-                // ההמרה הצליחה, ניתן להפעיל את הפונקציה
                 balancedSelection->updateUnderConstruction(
                 selectedFacility.getLifeQualityScore(),
                 selectedFacility.getEconomyScore(),
                 selectedFacility.getEnvironmentScore());
             }
-            // if (typeid(selectedFacility) == typeid(BalancedSelection)) {
-            //     ((BalancedSelection)selectionPolicy)->updateUnderConstruction(newFacility->getLifeQualityScore(), newFacility->getEconomyScore(), newFacility->getEnvironmentScore());
-            // }
-            
-
-        } catch (const std::exception& e) {
-            cout << e.what()<<endl;
-            break;
         }
     }
 
-    // Step 1: Update the status of facilities in underConstruction
+    // Step 3: Update the status of the facilities under construction
     for (auto it = underConstruction.begin(); it != underConstruction.end();) {
-        // Execute step() for each facility and check its status
         FacilityStatus currentStatus = (*it)->step();
 
         if (currentStatus == FacilityStatus::OPERATIONAL) {
-            // Move the facility to the completed list
             facilities.push_back(std::move(*it));
                         
             update_score((*it)->getLifeQualityScore(),
                          (*it)->getEconomyScore(),
                          (*it)->getEnvironmentScore());
 
-            // If the selection policy is BalancedSelection, update its scores
             if (BalancedSelection* balancedSelection = dynamic_cast<BalancedSelection*>(selectionPolicy)) {
                 balancedSelection->updateUnderConstruction(
                     -(*it)->getLifeQualityScore(),
@@ -187,17 +177,14 @@ void Plan::step() {
             ++it;
         }
     }
-
     
-    // Step 3: Update the plan's status
+    // Step 4: Update the plan's status
     if (static_cast<int>(underConstruction.size()) == constructionLimit) {
         status = PlanStatus::BUSY; // Plan is busy if underConstruction is full
     } else {
         status = PlanStatus::AVALIABLE; // Plan is available otherwise
     }
 }
-
-
 
 void Plan::printStatus() {
     cout << toString() << endl;

@@ -104,7 +104,7 @@ Simulation& Simulation::operator=(const Simulation &other) {
         }
 
         for (Settlement* settlement : other.settlements) {
-            settlements.push_back(new Settlement(*settlement)); //using Settlement has a copy constructor
+            settlements.push_back(new Settlement(*settlement));
         }
     }
     return *this;
@@ -221,7 +221,7 @@ Settlement &Simulation::getSettlement(const string &settlementName) {
 
 Plan &Simulation::getPlan(const int planID) {
     for (auto &plan : plans) {
-        if (planID == plan.getPlanId()) { // Use the getter here
+        if (planID == plan.getPlanId()) { 
             return plan;
         }
     }
@@ -281,5 +281,6 @@ void Simulation::close() {
     for(auto &plan : plans){
         plan.closetoString();
     }
+    cout << "/n" << endl;
 }
 
