@@ -20,6 +20,7 @@ public:
     Settlement(const Settlement &other);
     Settlement(Settlement &&other);
     ~Settlement();
+    Settlement& operator=(const Settlement& other);
 
     const string &getName() const;
     SettlementType getType() const;

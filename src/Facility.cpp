@@ -14,6 +14,7 @@ FacilityType::FacilityType(const FacilityType& other)
       economy_score(other.economy_score),
       environment_score(other.environment_score) {}
 
+//TO DO: צריך את זה? - לבדוק אם יש שימוש בזה (נראלי שהמימוש לא נכון) 
 FacilityType& FacilityType::operator=(const FacilityType& other) {
     if (this != &other) {
     }
@@ -28,6 +29,7 @@ FacilityType::FacilityType(FacilityType &&other) noexcept
       economy_score(other.economy_score),
       environment_score(other.environment_score) {}
 
+//TO DO: צריך את זה? - לבדוק אם יש שימוש בזה (נראלי שהמימוש לא נכון) 
 FacilityType &FacilityType::operator=(FacilityType &&other) noexcept {
     if (this != &other) {
     }
@@ -66,7 +68,6 @@ Facility::Facility(const string &name, const string &settlementName, const Facil
     : FacilityType(name, category, price, lifeQuality_score, economy_score, environment_score),
       settlementName(settlementName),
       status(FacilityStatus::UNDER_CONSTRUCTIONS),
-    //TO DO:
       timeLeft(price) {}
 
 #include "Facility.h"
@@ -77,8 +78,8 @@ Facility::Facility(const FacilityType &type, const string &settlementName)
       settlementName(settlementName),         
       status(FacilityStatus::UNDER_CONSTRUCTIONS), 
 
-      //TO DO:
-      timeLeft(10) {                          
+    //TO DO: היה כאן 10. שיניתי לפרייס מהטייפ
+      timeLeft(type.getCost()) {                          
 }
 
 const string& Facility::getSettlementName() const {
