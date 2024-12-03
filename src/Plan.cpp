@@ -60,6 +60,10 @@ void Plan::copyFrom(const Plan &other) {
 }
 
 //getters
+const std::vector<Facility*>& Plan::getUnderConstruction() const {
+    return underConstruction;
+}
+
 const int Plan::getlifeQualityScore() const {
     return life_quality_score;
 }
@@ -81,6 +85,9 @@ const vector<Facility*>& Plan::getFacilities() const {
 }
 
 void Plan::setSelectionPolicy(SelectionPolicy *newPolicy) {
+    if (newPolicy) {
+        delete selectionPolicy; // Free the old policy
+    }
     selectionPolicy = newPolicy;
 }
 
@@ -88,6 +95,9 @@ void Plan::update_score(int life, int economy, int envirmont){
     life_quality_score += life;
     economy_score += economy;
     environment_score += envirmont;
+    if (BalancedSelection* balancedSelection = dynamic_cast<BalancedSelection*>(selectionPolicy)) {
+        balancedSelection->updateMainScores(life, economy, envirmont);
+    }
 }
 
 void Plan::step() {
@@ -104,6 +114,15 @@ void Plan::step() {
                          (*it)->getEconomyScore(),
                          (*it)->getEnvironmentScore());
 
+            // If the selection policy is BalancedSelection, update its scores
+            if (BalancedSelection* balancedSelection = dynamic_cast<BalancedSelection*>(selectionPolicy)) {
+                balancedSelection->updateUnderConstruction(
+                    -(*it)->getLifeQualityScore(),
+                    -(*it)->getEconomyScore(),
+                    -(*it)->getEnvironmentScore()
+                );
+            }
+
             it = underConstruction.erase(it);
         } else {
             ++it;
@@ -119,7 +138,20 @@ void Plan::step() {
             Facility* newFacility = new Facility(selectedFacility, settlement.getName());
             underConstruction.push_back(newFacility);
 
+            if (BalancedSelection* balancedSelection = dynamic_cast<BalancedSelection*>(selectionPolicy)) {
+                // ההמרה הצליחה, ניתן להפעיל את הפונקציה
+                balancedSelection->updateUnderConstruction(
+                selectedFacility.getLifeQualityScore(),
+                selectedFacility.getEconomyScore(),
+                selectedFacility.getEnvironmentScore());
+            }
+            // if (typeid(selectedFacility) == typeid(BalancedSelection)) {
+            //     ((BalancedSelection)selectionPolicy)->updateUnderConstruction(newFacility->getLifeQualityScore(), newFacility->getEconomyScore(), newFacility->getEnvironmentScore());
+            // }
+            
+
         } catch (const std::exception& e) {
+            cout << e.what()<<endl;
             break;
         }
     }

@@ -119,8 +119,10 @@ void Simulation::start() {
             if (actionType == "step") {
                 int steps = std::stoi(args[1]);
                 action = new SimulateStep(steps);
+
             } else if (actionType == "plan") {
                 action = new AddPlan(args[1], args[2]);
+
             } else if (actionType == "facility") {
                 FacilityCategory category = static_cast<FacilityCategory>(std::stoi(args[2]));
                 int price = std::stoi(args[3]);
@@ -140,13 +142,16 @@ void Simulation::start() {
                 action = new RestoreSimulation();
             } else if (actionType == "log") {
                 action = new PrintActionsLog();
-            } else if (actionType == "close") {
+            } else if(actionType == "changePolicy"){
+                action = new ChangePlanPolicy(std::stoi(args[1]), args[2]);
+            }
+            else if (actionType == "close") {
                 action = new Close();
             } else {
                 std::cout << "Error: Unknown action \"" << actionType << "\"" << std::endl;
             }
 
-            if (action != nullptr) {
+            if (action) {
                 action->act(*this); 
                 addAction(action); 
             }
@@ -232,9 +237,15 @@ void Simulation::backUp() {
 }
 
 bool Simulation::restore() {
-    // if (!backup) return false;
-    // *this = *backup; 
-     return true;
+    if (!backup) {
+        std::cerr << "No backup available to restore." << std::endl;
+        return false;
+    }
+
+    // Replace the current simulation state with the backup
+    *this = *backup; // Using the copy assignment operator
+    std::cout << "Simulation restored successfully." << std::endl;
+    return true;
 }
 
 bool Simulation::isPlanExists(int plan_id) {
