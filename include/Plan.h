@@ -12,26 +12,34 @@ enum class PlanStatus {
 
 class Plan {
     public:
+        //constructor
         Plan(const int planId, const Settlement &settlement, SelectionPolicy *selectionPolicy, const vector<FacilityType> &facilityOptions);
-         ~Plan(); // Destructor
-        Plan(const Plan &other); // Copy constructor
-        Plan &operator=(const Plan &other); // Copy assignment operator
 
+        //rule of 5
+         ~Plan();
+        Plan(const Plan &other);
+        Plan &operator=(const Plan &other); 
+
+        //getters
         const std::vector<Facility*>& getUnderConstruction() const;
         const int getlifeQualityScore() const;
         const int getEconomyScore() const;
         const int getEnvironmentScore() const;
         const PlanStatus getStatus() const;
         const Settlement getSettlement() const;
+        int getPlanId() const;
+        const vector<Facility*> &getFacilities() const;
 
+        //methods
         void setSelectionPolicy(SelectionPolicy *selectionPolicy);
         void step();
-        int getPlanId() const;
-        void printStatus();
-        const vector<Facility*> &getFacilities() const;
         void addFacility(Facility* facility);
-        const string toString() const;
         void update_score(int life, int economy, int envirmont);
+
+        //print
+        void printStatus();
+        const string toString() const;
+        const void closetoString() const;
 
     private:
         int plan_id;

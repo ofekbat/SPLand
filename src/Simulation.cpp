@@ -123,7 +123,6 @@ void Simulation::start() {
             std::cout << "Error: No action provided" << std::endl;
             return;
         }
-        try {
             const std::string& actionType = args[0];
             BaseAction* action = nullptr; 
             if (actionType == "step") {
@@ -157,17 +156,16 @@ void Simulation::start() {
             }
             else if (actionType == "close") {
                 action = new Close();
-            } else {
+                action->act(*this);
+                delete action;
+            }
+            if (action && dynamic_cast<Close*>(action) == nullptr) {
+                    action->act(*this);
+                    addAction(action);
+            }
+            if(action == nullptr){
                 std::cout << "Error: Unknown action \"" << actionType << "\"" << std::endl;
             }
-
-            if (action) {
-                action->act(*this); 
-                addAction(action); 
-            }
-        } catch (const std::exception& e) {
-            std::cout << "Error: " << e.what() << std::endl;
-        }
     }
 }
 
@@ -236,14 +234,6 @@ void Simulation::step() {
     }
 }
 
-void Simulation::close() {
-    isRunning = false;
-
-    settlements.clear();
-    actionsLog.clear();
-    this->~Simulation();
-}
-
 void Simulation::backUp() {
     if (backup) delete backup; 
     backup = new Simulation(*this); 
@@ -251,13 +241,21 @@ void Simulation::backUp() {
 
 bool Simulation::restore() {
     if (!backup) {
-        std::cerr << "No backup available to restore." << std::endl;
+        std::cerr << "No backup available" << std::endl;
         return false;
     }
 
-    // Replace the current simulation state with the backup
-    *this = *backup; // Using the copy assignment operator
-    std::cout << "Simulation restored successfully." << std::endl;
+    for (BaseAction* action : actionsLog) {
+        delete action;
+    }
+    actionsLog.clear();
+
+    for (Settlement* settlement : settlements) {
+        delete settlement;
+    }
+    settlements.clear();
+
+    *this = *backup;
     return true;
 }
 
@@ -278,4 +276,10 @@ void Simulation::open(){
     this->isRunning = true;
 }
 
+void Simulation::close() {
+    isRunning = false;
+    for(auto &plan : plans){
+        plan.closetoString();
+    }
+}
 

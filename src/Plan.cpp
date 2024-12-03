@@ -25,32 +25,29 @@ Plan::~Plan() {
     }
     underConstruction.clear();
 
-    delete selectionPolicy;
+        if (selectionPolicy) {
+        delete selectionPolicy;
+        selectionPolicy = nullptr;
+    }
 }
-
 
 Plan::Plan(const Plan &other) 
     : plan_id(other.plan_id), 
       settlement(other.settlement),
-      selectionPolicy(other.selectionPolicy ? other.selectionPolicy->clone() : nullptr), // TO DO: לבדוק
+      selectionPolicy(other.selectionPolicy ? other.selectionPolicy->clone() : nullptr),
       status(other.status),
       facilities(), 
       underConstruction(),
       facilityOptions(other.facilityOptions),
       life_quality_score(other.life_quality_score),
       economy_score(other.economy_score),
-      environment_score(other.environment_score)
-      {
-    
+      environment_score(other.environment_score) {
     for (const auto& facility : other.facilities) {
         facilities.push_back(facility ? new Facility(*facility) : nullptr);
     }
-
     for (const auto* facility : other.underConstruction) {
         underConstruction.push_back(facility ? new Facility(*facility) : nullptr);
     }
-    //TO DO: נתקלתי בבעיה עם ה const כי אי אפשר לעשות העתקה עמוקה רק לקחת את המצביע
-    //facilityOptions = other.facilityOptions;
 }
 
 Plan& Plan::operator=(const Plan& other) {
@@ -66,7 +63,21 @@ Plan& Plan::operator=(const Plan& other) {
         }
         underConstruction.clear();
 
-        new (this) Plan(other);
+        selectionPolicy = other.selectionPolicy ? other.selectionPolicy->clone() : nullptr;
+        facilities.reserve(other.facilities.size());
+        for (const auto& facility : other.facilities) {
+            facilities.push_back(facility ? new Facility(*facility) : nullptr);
+        }
+        underConstruction.reserve(other.underConstruction.size());
+        for (const auto* facility : other.underConstruction) {
+            underConstruction.push_back(facility ? new Facility(*facility) : nullptr);
+        }
+
+        plan_id = other.plan_id;
+        status = other.status;
+        life_quality_score = other.life_quality_score;
+        economy_score = other.economy_score;
+        environment_score = other.environment_score;
     }
     return *this;
 }
@@ -211,5 +222,13 @@ const string Plan::toString() const {
    return "Plan ID: " + to_string(plan_id) + "\n" +
        "Settlement Name: " + settlement.getName() + "\n" +
        "Plan Status: " + (status == PlanStatus::AVALIABLE ? "Available" : "BUSY");
-
 }
+
+const void Plan::closetoString() const {
+    cout << "PlanID: " << plan_id << endl;
+    cout << "SettlementName: " << settlement.getName() << endl;
+    cout << "Life Quality Score: " << life_quality_score << endl;
+    cout << "Economy Score: " << economy_score << endl;
+    cout << "Environment Score: " << environment_score << endl;
+}
+

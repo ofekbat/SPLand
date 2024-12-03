@@ -13,25 +13,37 @@ class SelectionPolicy;
 
 class Simulation {
     public:
+        //constructor
         Simulation(const string &configFilePath);
+
+        //rule of 5
         ~Simulation();
         Simulation(const Simulation &other);
         Simulation& operator=(const Simulation &other);
+
+        //methods
         void start();
-        void addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy);
-        void addAction(BaseAction *action);
-        bool addSettlement(Settlement *settlement);
-        bool addFacility(FacilityType facility);
-        bool isSettlementExists(const string &settlementName);
-        bool isPlanExists(int plan_id); //check if exist
-        Settlement &getSettlement(const string &settlementName);
-        const vector<BaseAction*>& getActionsLog() const; //getter for the actions
-        Plan &getPlan(const int planID);
         void step();
         void close();
         void open();
         void backUp();
         bool restore();
+
+        //add
+        void addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy);
+        void addAction(BaseAction *action);
+        bool addSettlement(Settlement *settlement);
+        bool addFacility(FacilityType facility);
+
+        //check
+        bool isSettlementExists(const string &settlementName);
+        bool isPlanExists(int plan_id); //check if exist
+
+        //getters
+        Settlement &getSettlement(const string &settlementName);
+        const vector<BaseAction*>& getActionsLog() const; //getter for the actions
+        Plan &getPlan(const int planID);
+        
 
 
     private:

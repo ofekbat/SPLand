@@ -5,26 +5,6 @@
 Settlement::Settlement(const string &name, SettlementType type)
     : name(name), type(type) {}
 
-//copy constructor
-Settlement::Settlement(const Settlement &other)
-    : name(other.name), type(other.type) {}
-
-//move constructor
-Settlement::Settlement(Settlement &&other)
-    : name(std::move(other.name)), type(other.type) {}
-
-//destractor
-Settlement::~Settlement() {}
-
-Settlement& Settlement::operator=(const Settlement& other) {
-    if (this != &other) {
-        this->~Settlement(); // Explicitly call the destructor
-        new (this) Settlement(other); // Reconstruct the object in-place
-    }
-    return *this;
-}
-
-
 //getters
 const string &Settlement::getName() const {
     return name;

@@ -18,12 +18,13 @@ enum class FacilityCategory {
 
 class FacilityType {
     public:
+        //constructor
         FacilityType(const string &name, const FacilityCategory category, const int price, const int lifeQuality_score, const int economy_score, const int environment_score);
-        FacilityType(const FacilityType& other);
+
+        //rule of 5 - needed bacause of the const members
         FacilityType& operator=(const FacilityType& other);
-        FacilityType(FacilityType &&other) noexcept; // Move constructor
-        FacilityType &operator=(FacilityType &&other) noexcept; // Move assignment (deleted due to const members)
         
+        //getters
         const string &getName() const;
         int getCost() const;
         int getLifeQualityScore() const;
@@ -45,13 +46,21 @@ class FacilityType {
 class Facility: public FacilityType {
 
     public:
+        //constructor
         Facility(const string &name, const string &settlementName, const FacilityCategory category, const int price, const int lifeQuality_score, const int economy_score, const int environment_score);   
         Facility(const FacilityType &type, const string &settlementName);
+
+        //getters
         const string &getSettlementName() const;
         const int getTimeLeft() const;
-        FacilityStatus step();
-        void setStatus(FacilityStatus status);
         const FacilityStatus& getStatus() const;
+
+        //setters
+        void setStatus(FacilityStatus status);
+
+
+        //methods
+        FacilityStatus step();
         const string toString() const;
 
     private:
