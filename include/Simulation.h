@@ -44,6 +44,7 @@ class Simulation {
         const vector<BaseAction*>& getActionsLog() const; //getter for the actions
         Plan &getPlan(const int planID);
         
+        void printSimulationState(const std::string& message) const;
 
 
     private:

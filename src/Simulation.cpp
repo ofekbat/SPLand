@@ -82,28 +82,37 @@ Simulation::Simulation(const Simulation &other)
 
 Simulation& Simulation::operator=(const Simulation &other) {
     if (this != &other) {
+        // Clear and copy actionsLog
         for (BaseAction* action : actionsLog) {
             delete action;
         }
         actionsLog.clear();
 
+        for (BaseAction* action : other.actionsLog) {
+            actionsLog.push_back(action->clone()); // using BaseAction clone() method
+        }
+
+        // Clear and copy settlements
         for (Settlement* settlement : settlements) {
             delete settlement;
         }
         settlements.clear();
 
-        isRunning = other.isRunning;
-        planCounter = other.planCounter;
-
-        plans = other.plans;
-        facilitiesOptions = other.facilitiesOptions;
-
-        for (BaseAction* action : other.actionsLog) {
-            actionsLog.push_back(action->clone()); //using BaseAction clone() method
-        }
-
         for (Settlement* settlement : other.settlements) {
             settlements.push_back(new Settlement(*settlement));
+        }
+
+        // Copy primitive fields
+        isRunning = other.isRunning;
+
+        planCounter = other.planCounter;
+
+        // Copy facilitiesOptions
+        facilitiesOptions = other.facilitiesOptions;
+        plans.clear();
+
+        for (const Plan& plan : other.plans) {
+            plans.push_back(Plan(plan));
         }
     }
     return *this;
@@ -272,3 +281,43 @@ void Simulation::close() {
     cout << "\n" << endl;
 }
 
+void Simulation::printSimulationState(const std::string& message) const {
+    std::cout << "==== " << message << " ====" << std::endl;
+
+    // Printing the isRunning status
+    std::cout << "isRunning: " << (isRunning ? "true" : "false") << std::endl;
+
+    // Printing planCounter
+    std::cout << "planCounter: " << planCounter << std::endl;
+
+    // Printing actionsLog
+    std::cout << "actionsLog: (BaseAction*) " << std::endl;
+    for (const auto& action : actionsLog) {
+        std::cout << action->toString() << " - Status: " 
+                  << (action->getStatus() == ActionStatus::COMPLETED ? "COMPLETED" : "ERROR") << std::endl;
+    }
+
+    // Printing plans
+    std::cout << "plans: (Plan)" << std::endl;
+    for (const auto& plan : plans) {
+        std::cout << plan.toString() << std::endl;  // Assuming Plan has a toString method
+    }
+
+    // Printing settlements
+    std::cout << "settlements: (Settlement*)" << std::endl;
+    for (const auto& settlement : settlements) {
+        std::cout << "Name: " << settlement->getName() 
+                  << ", Type: " << static_cast<int>(settlement->getType()) 
+                  << ", Construction Limit: " << settlement->getConstructionLimit() << std::endl;
+    }
+
+    // Printing facilitiesOptions
+    std::cout << "facilitiesOptions: (FacilityType)" << std::endl;
+    for (const auto& facility : facilitiesOptions) {
+        std::cout << "Facility Name: " << facility.getName() 
+                  << ", Category: " << static_cast<int>(facility.getCategory())
+                  <<  std::endl;
+    }
+
+    std::cout << "==== End of " << message << " ====" << std::endl;
+}

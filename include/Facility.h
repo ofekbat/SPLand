@@ -23,6 +23,7 @@ class FacilityType {
 
         //rule of 5 - needed bacause of the const members
         FacilityType& operator=(const FacilityType& other);
+        FacilityType(const FacilityType& other);
         
         //getters
         const string &getName() const;
@@ -49,6 +50,7 @@ class Facility: public FacilityType {
         //constructor
         Facility(const string &name, const string &settlementName, const FacilityCategory category, const int price, const int lifeQuality_score, const int economy_score, const int environment_score);   
         Facility(const FacilityType &type, const string &settlementName);
+        Facility(const Facility &other); 
 
         //getters
         const string &getSettlementName() const;

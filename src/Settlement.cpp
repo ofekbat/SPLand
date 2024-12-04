@@ -1,5 +1,6 @@
 #include "Settlement.h"
 #include <utility>
+#include <iostream>
 
 //constractor
 Settlement::Settlement(const string &name, SettlementType type)

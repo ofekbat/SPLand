@@ -46,15 +46,29 @@ Facility::Facility(const string &name, const string &settlementName, const Facil
       status(FacilityStatus::UNDER_CONSTRUCTIONS),
       timeLeft(price) {}
 
+FacilityType::FacilityType(const FacilityType& other)
+    : name(other.name),
+      category(other.category),
+      price(other.price),
+      lifeQuality_score(other.lifeQuality_score),
+      economy_score(other.economy_score),
+      environment_score(other.environment_score) {}
+
 // Constructor: Creates a Facility based on a FacilityType and a settlement name
 Facility::Facility(const FacilityType &type, const string &settlementName)
     : FacilityType(type),                     
       settlementName(settlementName),         
       status(FacilityStatus::UNDER_CONSTRUCTIONS), 
 
-    //TO DO: היה כאן 10. שיניתי לפרייס מהטייפ
       timeLeft(type.getCost()) {                          
 }
+
+Facility::Facility(const Facility& other) 
+    : FacilityType(other),
+      settlementName(other.settlementName),
+      status(other.status),
+      timeLeft(other.timeLeft) {}
+
 
 const string& Facility::getSettlementName() const {
     return settlementName;

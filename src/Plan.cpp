@@ -45,6 +45,7 @@ Plan::Plan(const Plan &other)
     for (const auto& facility : other.facilities) {
         facilities.push_back(facility ? new Facility(*facility) : nullptr);
     }
+    
     for (const auto* facility : other.underConstruction) {
         underConstruction.push_back(facility ? new Facility(*facility) : nullptr);
     }
@@ -171,7 +172,7 @@ void Plan::step() {
                     -(*it)->getEnvironmentScore()
                 );
             }
-
+            
             it = underConstruction.erase(it);
         } else {
             ++it;
