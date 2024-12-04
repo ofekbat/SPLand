@@ -18,6 +18,7 @@ class Plan {
         //rule of 5
          ~Plan();
         Plan(const Plan &other);
+        Plan(const Plan &other, const Settlement &newSettlement); //needed for the backup
         Plan &operator=(const Plan &other); 
 
         //getters
@@ -28,6 +29,7 @@ class Plan {
         const PlanStatus getStatus() const;
         const Settlement getSettlement() const;
         int getPlanId() const;
+        string getName() const;
         const vector<Facility*> &getFacilities() const;
 
         //methods
@@ -44,6 +46,7 @@ class Plan {
     private:
         int plan_id;
         const Settlement &settlement;
+        string planName;
         SelectionPolicy *selectionPolicy; //What happens if we change this to a reference?
         PlanStatus status;        
         vector<Facility*> facilities;

@@ -6,13 +6,13 @@
 Settlement::Settlement(const string &name, SettlementType type)
     : name(name), type(type) {}
 
+    Settlement::Settlement(const Settlement& other)
+    : name(other.name), type(other.type) {
+}
+
 //getters
 const string &Settlement::getName() const {
     return name;
-}
-
-Settlement::Settlement(const Settlement& other)
-    : name(other.name), type(other.type) {
 }
 
 SettlementType Settlement::getType() const {

@@ -6,7 +6,8 @@ using namespace std;
 //constructor
 Plan::Plan(const int planId, const Settlement &settlement, SelectionPolicy *selectionPolicy, const vector<FacilityType> &facilityOptions)
     : plan_id(planId), 
-    settlement(settlement), 
+    settlement(settlement),
+    planName(settlement.getName()),
     selectionPolicy(selectionPolicy),
     status(PlanStatus::AVALIABLE), 
     facilities(), 
@@ -34,6 +35,7 @@ Plan::~Plan() {
 Plan::Plan(const Plan &other) 
     : plan_id(other.plan_id), 
       settlement(other.settlement),
+      planName(other.settlement.getName()),
       selectionPolicy(other.selectionPolicy ? other.selectionPolicy->clone() : nullptr),
       status(other.status),
       facilities(), 
@@ -76,11 +78,34 @@ Plan& Plan::operator=(const Plan& other) {
 
         plan_id = other.plan_id;
         status = other.status;
+        planName = other.settlement.getName();
         life_quality_score = other.life_quality_score;
         economy_score = other.economy_score;
         environment_score = other.environment_score;
     }
     return *this;
+}
+
+Plan::Plan(const Plan &other, const Settlement &newSettlement) 
+    : plan_id(other.plan_id), 
+      settlement(newSettlement),
+      planName(newSettlement.getName()), 
+      selectionPolicy(other.selectionPolicy ? other.selectionPolicy->clone() : nullptr),
+      status(other.status),
+      facilities(), 
+      underConstruction(),
+      facilityOptions(other.facilityOptions),
+      life_quality_score(other.life_quality_score),
+      economy_score(other.economy_score),
+      environment_score(other.environment_score) {
+
+    for (const auto& facility : other.facilities) {
+        facilities.push_back(facility ? new Facility(*facility) : nullptr);
+    }
+
+    for (const auto* facility : other.underConstruction) {
+        underConstruction.push_back(facility ? new Facility(*facility) : nullptr);
+    }
 }
 
 //getters
@@ -94,6 +119,10 @@ const int Plan::getlifeQualityScore() const {
 
 int Plan::getPlanId() const {
     return plan_id;
+}
+
+string Plan::getName() const {
+    return planName;
 }
 
 const int Plan::getEconomyScore() const {
